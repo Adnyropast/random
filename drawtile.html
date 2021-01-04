@@ -1,0 +1,471 @@
+<title>Draw Tiles</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+main {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+main > * {
+    flex-grow: 1;
+    width: 100%;
+}
+
+canvas {
+    box-shadow: 0 0 4px 4px white;
+    background-color: white;
+}
+
+.criterion {
+    position: relative;
+    margin-top: 2em;
+}
+
+.criterion > label {
+    position: absolute;
+    top: -1em;
+    left: 0;
+    color: lightGray;
+}
+
+.criterion > input:focus + label {
+    color: white;
+}
+
+#rightbar {
+    padding: 16px;
+    background-color: #303030;
+}
+
+#rightbar > div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+#repeatedCanvas {
+    width: 50%;
+}
+
+#imgCanvas {
+    width: 320px;
+    height: 320px;
+}
+
+</style>
+
+<main>
+    <canvas id="repeatedCanvas" width="1280" height="720"></canvas>
+    
+    <div id="rightbar">
+        <div>
+            <canvas id="imgCanvas" width="320" height="320"></canvas>
+        </div>
+        
+        <div>
+            <button onclick="clearDraw();">Clear</button>
+            <button onclick="downloadRepeated()">Download Pattern Image</button>
+            <button onclick="downloadImg()">Download Tile Image</button>
+        </div>
+        
+        <div class="criterion">
+            <input id="tileSize" value="16">
+            <label>Tile Size</label>
+        </div>
+        
+        <div class="criterion">
+            <input id="repeatX" value="9">
+            <label>Horizontal Repeat Count</label>
+        </div>
+        
+        <div class="criterion">
+            <input id="repeatY" value="9">
+            <label>Vertical Repeat Count</label>
+        </div>
+        
+    </div>
+</main>
+
+<script>
+
+const repeatedCanvas = document.querySelector("canvas");
+const imgCanvas = document.querySelector("#rightbar canvas");
+
+const repeatedContext = repeatedCanvas.getContext("2d");
+const imgContext = imgCanvas.getContext("2d");
+
+imgContext.imageSmoothingEnabled = "false";
+
+function getTileSize() {
+    return Number(tileSize.value);
+}
+
+function getRepeatX() {
+    return Number(repeatX.value);
+}
+
+function getRepeatY() {
+    return Number(repeatY.value);
+}
+
+repeatX.addEventListener("input", function() {
+    copyRepeat();
+});
+
+repeatY.addEventListener("input", function() {
+    copyRepeat();
+});
+
+const pixels = [];
+
+function clearDraw() {
+    imgContext.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
+    copyRepeat();
+}
+
+function copyRepeat() {
+    repeatedContext.clearRect(0, 0, repeatedCanvas.width, repeatedCanvas.height);
+    
+    for(let i = 0, rX = getRepeatX(); i < rX; ++i) {
+        for(let j = 0, rY = getRepeatY(); j < rY; ++j) {
+            let x = i * repeatedCanvas.width / rX;
+            let y = j * repeatedCanvas.height / rY;
+            let width = repeatedCanvas.width / rX;
+            let height = repeatedCanvas.height / rY;
+            
+            repeatedContext.drawImage(imgCanvas, x, y, width, height);
+        }
+    }
+}
+
+function drawPixels() {
+    imgContext.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
+    
+    for(let i = 0; i < pixels.length; ++i) {
+        const pixel = pixels[i];
+        
+        let x = pixel.x * imgCanvas.width / getTileSize();
+        let y = pixel.y * imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(x, y, imgCanvas.width / getTileSize(), imgCanvas.height / getTileSize());
+    }
+    
+    copyRepeat();
+}
+
+imgCanvas.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+});
+
+const mouse = {};
+
+imgCanvas.addEventListener("mousedown", function(event) {
+    let x = event.pageX;
+    let y = event.pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= getTileSize() / this.clientWidth;
+    y *= getTileSize() / this.clientHeight;
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    // console.log(x, y);
+    
+    mouse[event.which] = true;
+    
+    if(mouse[1]) {
+        // pixels.push({x: x, y: y});
+        
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        // drawPixels();
+        copyRepeat();
+    }
+    
+    if(mouse[3]) {
+        <!-- for(let i = pixels.length - 1; i >= 0; --i) { -->
+            <!-- const pixel = pixels[i]; -->
+            
+            <!-- if(pixel.x === x && pixel.y === y) { -->
+                <!-- pixels.splice(i, 1); -->
+            <!-- } -->
+        <!-- } -->
+        
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        // drawPixels();
+        copyRepeat();
+    }
+    
+});
+
+imgCanvas.addEventListener("mousemove", function(event) {
+    let x = event.pageX;
+    let y = event.pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= getTileSize() / this.clientWidth;
+    y *= getTileSize() / this.clientHeight;
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    // console.log(x, y);
+    
+    if(mouse[1]) {
+        // pixels.push({x: x, y: y});
+        
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        // drawPixels();
+        copyRepeat();
+    }
+    
+    if(mouse[3]) {
+        <!-- for(let i = pixels.length - 1; i >= 0; --i) { -->
+            <!-- const pixel = pixels[i]; -->
+            
+            <!-- if(pixel.x === x && pixel.y === y) { -->
+                <!-- pixels.splice(i, 1); -->
+            <!-- } -->
+        <!-- } -->
+        
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        // drawPixels();
+        copyRepeat();
+    }
+    
+});
+
+addEventListener("mouseup", function(event) {
+    delete mouse[event.which];
+});
+
+imgCanvas.addEventListener("touchstart", function(event) {
+    let x = event.touches[0].pageX;
+    let y = event.touches[0].pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= getTileSize() / this.clientWidth;
+    y *= getTileSize() / this.clientHeight;
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    if(event.ctrlKey) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    } else {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+});
+
+imgCanvas.addEventListener("touchmove", function(event) {
+    let x = event.touches[0].pageX;
+    let y = event.touches[0].pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= getTileSize() / this.clientWidth;
+    y *= getTileSize() / this.clientHeight;
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    if(event.ctrlKey) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    } else {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+});
+
+imgCanvas.addEventListener("touchend", function(event) {
+    
+});
+
+
+
+repeatedCanvas.addEventListener("mousedown", function(event) {
+    mouse[event.which] = true;
+    
+    let x = event.pageX;
+    let y = event.pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= this.width / this.clientWidth;
+    y *= this.height / this.clientHeight;
+    
+    const repeatWidth = this.width / getRepeatX();
+    const repeatHeight = this.height / getRepeatY();
+    
+    x = (x / repeatWidth) % 1;
+    y = (y / repeatHeight) % 1;
+    
+    x *= getTileSize();
+    y *= getTileSize();
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    // console.log(x, y);
+    
+    if(mouse[1]) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+    if(mouse[3]) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+});
+
+repeatedCanvas.addEventListener("mousemove", function(event) {
+    let x = event.pageX;
+    let y = event.pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= this.width / this.clientWidth;
+    y *= this.height / this.clientHeight;
+    
+    const repeatWidth = this.width / getRepeatX();
+    const repeatHeight = this.height / getRepeatY();
+    
+    x = (x / repeatWidth) % 1;
+    y = (y / repeatHeight) % 1;
+    
+    x *= getTileSize();
+    y *= getTileSize();
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    // console.log(x, y);
+    
+    if(mouse[1]) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+    if(mouse[3]) {
+        let drawX = x * imgCanvas.width / getTileSize();
+        let drawY = y * imgCanvas.height / getTileSize();
+        let drawWidth = imgCanvas.width / getTileSize();
+        let drawHeight = imgCanvas.height / getTileSize();
+        
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+});
+
+repeatedCanvas.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+});
+
+function downloadRepeated() {
+    const a = document.createElement("a");
+    
+    a.download = "repeated.png";
+    a.href = repeatedCanvas.toDataURL();
+    
+    a.click();
+}
+
+function downloadImg() {
+    const a = document.createElement("a");
+    
+    a.download = "tile.png"
+    a.href = imgCanvas.toDataURL();
+    
+    a.click();
+}
+
+</script>
