@@ -1,4 +1,4 @@
-<title>Draw Tiles</title>
+<title>Draft Tiles</title>
 
 <style>
 
@@ -25,13 +25,14 @@ canvas {
 
 .criterion {
     position: relative;
-    margin-top: 2em;
+    margin-top: 1.5em;
 }
 
 .criterion > label {
     position: absolute;
     top: -1em;
     left: 0;
+    font-size: 0.875em;
     color: lightGray;
 }
 
@@ -42,6 +43,7 @@ canvas {
 #rightbar {
     padding: 16px;
     background-color: #303030;
+    color: white;
 }
 
 #rightbar > div:nth-child(1) {
@@ -75,19 +77,40 @@ canvas {
             <button onclick="downloadImg()">Download Tile Image</button>
         </div>
         
-        <div class="criterion">
-            <input id="tileSize" value="16">
-            <label>Tile Size</label>
-        </div>
-        
-        <div class="criterion">
-            <input id="repeatX" value="9">
-            <label>Horizontal Repeat Count</label>
-        </div>
-        
-        <div class="criterion">
-            <input id="repeatY" value="9">
-            <label>Vertical Repeat Count</label>
+        <div style='display: flex;'>
+            <div>
+                <div class="criterion">
+                    <input id="tileSize" value="16">
+                    <label>Tile Size</label>
+                </div>
+                
+                <div class="criterion">
+                    <input id="repeatX" value="9">
+                    <label>Horizontal Repeat Count</label>
+                </div>
+                
+                <div class="criterion">
+                    <input id="repeatY" value="9">
+                    <label>Vertical Repeat Count</label>
+                </div>
+                
+                <div class="criterion">
+                    <input id="brushRadius" value="1">
+                    <label>Brush Radius</label>
+                </div>
+                
+                <div class="criterion">
+                    <input id="brushColor" value="black">
+                    <label>Brush Color</label>
+                </div>
+                
+            </div>
+            <div>
+                <input type="checkbox" id="smoothLines" checked>
+                <label for="smoothLines">Smooth Lines</label>
+                
+            </div>
+            
         </div>
         
     </div>
@@ -115,15 +138,9 @@ function getRepeatY() {
     return Number(repeatY.value);
 }
 
-repeatX.addEventListener("input", function() {
-    copyRepeat();
-});
-
-repeatY.addEventListener("input", function() {
-    copyRepeat();
-});
-
-const pixels = [];
+function getBrushRadius() {
+    return Number(brushRadius.value);
+}
 
 function clearDraw() {
     imgContext.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
@@ -145,28 +162,73 @@ function copyRepeat() {
     }
 }
 
-function drawPixels() {
-    imgContext.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
+function linesKT(positionL1, directionL1, positionL2, directionL2) {
+    let k = directionL2[0] * (positionL1[1] - positionL2[1]) - directionL2[1] * (positionL1[0] - positionL2[0]);
+    k /= directionL2[1] * directionL1[0] - directionL2[0] * directionL1[1];
     
-    for(let i = 0; i < pixels.length; ++i) {
-        const pixel = pixels[i];
+    let t = directionL1[0] * (positionL1[1] - positionL2[1]) - directionL1[1] * (positionL1[0] - positionL2[0]);
+    t /= directionL1[0] * directionL2[1] - directionL1[1] * directionL2[0];
+    
+    linesK = k, linesT = t;
+    
+    return {k:k, t:t};
+}
+
+function intersection(positionL1, directionL1, positionL2, directionL2) {
+    const {k, t} = linesKT(...arguments);
+    
+    if(0 <= k && k <= 1 && 0 <= t && t <= 1) {
+        let pointL1 = [
+            positionL1[0] + directionL1[0] * k,
+            positionL1[1] + directionL1[1] * k
+        ];
         
-        let x = pixel.x * imgCanvas.width / getTileSize();
-        let y = pixel.y * imgCanvas.height / getTileSize();
+        let pointL2 = [
+            positionL2[0] + directionL2[0] * t,
+            positionL2[1] + directionL2[1] * t
+        ];
         
-        imgContext.fillRect(x, y, imgCanvas.width / getTileSize(), imgCanvas.height / getTileSize());
+        return pointL1;
+    } else {
+        
     }
     
-    copyRepeat();
+    return null;
 }
+
+function tracePixels(x1, y1, x2, y2, drawWidth, drawHeight, traceFn = function() { imgContext.fillRect(...arguments); }) {
+    if(smoothLines.checked) {
+        let minX = Math.min(x1, x2);
+        let maxX = Math.max(x1, x2);
+        let minY = Math.min(y1, y2);
+        let maxY = Math.max(y1, y2);
+        
+        for(let i = minX; i <= maxX; i += drawWidth) {
+            for(let j = minY; j <= maxY; j += drawHeight) {
+                if(
+                    intersection([x1, y1], [x2 - x1, y2 - y1], [i, j], [drawWidth, 0]) ||
+                    intersection([x1, y1], [x2 - x1, y2 - y1], [i, j], [0, drawHeight]) ||
+                    intersection([x1, y1], [x2 - x1, y2 - y1], [i + drawWidth, j], [0, drawHeight]) ||
+                    intersection([x1, y1], [x2 - x1, y2 - y1], [i, j + drawHeight], [drawWidth, 0])
+                ) {
+                    traceFn(i, j, drawWidth, drawHeight);
+                }
+                
+            }
+        }
+    }
+}
+
+const mouse = {};
+let prevX, prevY;
 
 imgCanvas.addEventListener("contextmenu", function(event) {
     event.preventDefault();
 });
 
-const mouse = {};
-
 imgCanvas.addEventListener("mousedown", function(event) {
+    mouse[event.which] = true;
+    
     let x = event.pageX;
     let y = event.pageY;
     
@@ -179,44 +241,35 @@ imgCanvas.addEventListener("mousedown", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
-    // console.log(x, y);
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
     
-    mouse[event.which] = true;
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
     
     if(mouse[1]) {
-        // pixels.push({x: x, y: y});
-        
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
         
-        // drawPixels();
         copyRepeat();
     }
     
     if(mouse[3]) {
-        <!-- for(let i = pixels.length - 1; i >= 0; --i) { -->
-            <!-- const pixel = pixels[i]; -->
-            
-            <!-- if(pixel.x === x && pixel.y === y) { -->
-                <!-- pixels.splice(i, 1); -->
-            <!-- } -->
-        <!-- } -->
-        
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
         
-        // drawPixels();
         copyRepeat();
     }
     
+    prevX = drawX;
+    prevY = drawY;
 });
 
 imgCanvas.addEventListener("mousemove", function(event) {
@@ -232,42 +285,39 @@ imgCanvas.addEventListener("mousemove", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
-    // console.log(x, y);
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
     
     if(mouse[1]) {
-        // pixels.push({x: x, y: y});
-        
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
         
-        // drawPixels();
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight);
+        
         copyRepeat();
     }
     
     if(mouse[3]) {
-        <!-- for(let i = pixels.length - 1; i >= 0; --i) { -->
-            <!-- const pixel = pixels[i]; -->
-            
-            <!-- if(pixel.x === x && pixel.y === y) { -->
-                <!-- pixels.splice(i, 1); -->
-            <!-- } -->
-        <!-- } -->
-        
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
         
-        // drawPixels();
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight, function() { imgContext.clearRect(...arguments); });
+        
         copyRepeat();
     }
     
+    prevX = drawX;
+    prevY = drawY;
 });
 
 addEventListener("mouseup", function(event) {
@@ -287,25 +337,33 @@ imgCanvas.addEventListener("touchstart", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
+    
     if(event.ctrlKey) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     } else {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     }
+    
+    prevX = drawX;
+    prevY = drawY;
 });
 
 imgCanvas.addEventListener("touchmove", function(event) {
@@ -321,25 +379,39 @@ imgCanvas.addEventListener("touchmove", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
+    
+    
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
+    
     if(event.ctrlKey) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight, function() { imgContext.clearRect(...arguments); });
         
         copyRepeat();
     } else {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     }
+    
+    prevX = drawX;
+    prevY = drawY;
 });
 
 imgCanvas.addEventListener("touchend", function(event) {
@@ -372,30 +444,37 @@ repeatedCanvas.addEventListener("mousedown", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
-    // console.log(x, y);
+    
+    
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
     
     if(mouse[1]) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     }
     
     if(mouse[3]) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     }
     
+    prevX = drawX;
+    prevY = drawY;
 });
 
 repeatedCanvas.addEventListener("mousemove", function(event) {
@@ -420,34 +499,163 @@ repeatedCanvas.addEventListener("mousemove", function(event) {
     x = Math.floor(x);
     y = Math.floor(y);
     
-    // console.log(x, y);
+    
+    
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
     
     if(mouse[1]) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
+        imgContext.fillStyle = brushColor.value;
         imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight);
         
         copyRepeat();
     }
     
     if(mouse[3]) {
-        let drawX = x * imgCanvas.width / getTileSize();
-        let drawY = y * imgCanvas.height / getTileSize();
-        let drawWidth = imgCanvas.width / getTileSize();
-        let drawHeight = imgCanvas.height / getTileSize();
-        
         imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight, function() { imgContext.clearRect(...arguments); });
         
         copyRepeat();
     }
     
+    prevX = drawX;
+    prevY = drawY;
 });
 
 repeatedCanvas.addEventListener("contextmenu", function(event) {
     event.preventDefault();
+});
+
+repeatedCanvas.addEventListener("touchstart", function(event) {
+    let x = event.touches[0].pageX;
+    let y = event.touches[0].pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= this.width / this.clientWidth;
+    y *= this.height / this.clientHeight;
+    
+    const repeatWidth = this.width / getRepeatX();
+    const repeatHeight = this.height / getRepeatY();
+    
+    x = (x / repeatWidth) % 1;
+    y = (y / repeatHeight) % 1;
+    
+    x *= getTileSize();
+    y *= getTileSize();
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    
+    
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
+    
+    if(event.ctrlKey) {
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    } else {
+        imgContext.fillStyle = brushColor.value;
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+    prevX = drawX;
+    prevY = drawY;
+});
+
+repeatedCanvas.addEventListener("touchmove", function(event) {
+    let x = event.touches[0].pageX;
+    let y = event.touches[0].pageY;
+    
+    x -= this.offsetLeft;
+    y -= this.offsetTop;
+    
+    x *= this.width / this.clientWidth;
+    y *= this.height / this.clientHeight;
+    
+    const repeatWidth = this.width / getRepeatX();
+    const repeatHeight = this.height / getRepeatY();
+    
+    x = (x / repeatWidth) % 1;
+    y = (y / repeatHeight) % 1;
+    
+    x *= getTileSize();
+    y *= getTileSize();
+    
+    x = Math.floor(x);
+    y = Math.floor(y);
+    
+    
+    
+    let drawX = x * imgCanvas.width / getTileSize();
+    let drawY = y * imgCanvas.height / getTileSize();
+    let drawWidth = imgCanvas.width / getTileSize();
+    let drawHeight = imgCanvas.height / getTileSize();
+    
+    drawX += drawWidth/2;
+    drawY += drawHeight/2;
+    
+    drawWidth *= getBrushRadius();
+    drawHeight *= getBrushRadius();
+    
+    drawX -= drawWidth/2;
+    drawY -= drawHeight/2;
+    
+    if(event.ctrlKey) {
+        imgContext.clearRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight, function() { imgContext.clearRect(...arguments); });
+        
+        copyRepeat();
+    } else {
+        imgContext.fillStyle = brushColor.value;
+        imgContext.fillRect(drawX, drawY, drawWidth, drawHeight);
+        
+        tracePixels(prevX, prevY, drawX, drawY, drawWidth, drawHeight);
+        
+        copyRepeat();
+    }
+    
+    prevX = drawX;
+    prevY = drawY;
+});
+
+repeatX.addEventListener("input", function() {
+    copyRepeat();
+});
+
+repeatY.addEventListener("input", function() {
+    copyRepeat();
 });
 
 function downloadRepeated() {
