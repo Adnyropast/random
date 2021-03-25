@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>BDII Job Shuffler</title>
+        <link rel="icon" href="images/asterisk.png">
+        
         <style>
         
         html {
@@ -37,7 +40,13 @@
         }
         
         #buttons {
+            display: flex;
+            flex-direction: column;
             padding: 16px 8px;
+        }
+        
+        #buttons > * {
+            margin: 4px 0;
         }
         
         #jobs {
@@ -81,200 +90,202 @@
         <main>
             <div id="buttons">
                 <button onclick="shuffleJobs();">Shuffle</button>
+                <button onclick="copyTxt();">Copy Text</button>
+                <button onclick="downloadTxt();">Download Text</button>
             </div>
             <div id="jobs">
                 <div>
                     <div class="job-row">
-                        <img src="images/jobicon_freelancer.png" title="Freelancer">
+                        <img src="images/jobicon_freelancer.png" title="Freelancer" data-name="Freelancer">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_freelancer.png" title="Freelancer">
+                            <img src="images/jobicon_freelancer.png" title="Freelancer" data-name="Freelancer">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_blackmage.png" title="Black Mage">
+                        <img src="images/jobicon_blackmage.png" title="Black Mage" data-name="Black Mage">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_blackmage.png" title="Black Mage">
+                            <img src="images/jobicon_blackmage.png" title="Black Mage" data-name="Black Mage">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_whitemage.png" title="White Mage">
+                        <img src="images/jobicon_whitemage.png" title="White Mage" data-name="White Mage">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_whitemage.png" title="White Mage">
+                            <img src="images/jobicon_whitemage.png" title="White Mage" data-name="White Mage">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_vanguard.png" title="Vanguard">
+                        <img src="images/jobicon_vanguard.png" title="Vanguard" data-name="Vanguard">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_vanguard.png" title="Vanguard">
+                            <img src="images/jobicon_vanguard.png" title="Vanguard" data-name="Vanguard">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_monk.png" title="Monk">
+                        <img src="images/jobicon_monk.png" title="Monk" data-name="Monk">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_monk.png" title="Monk">
+                            <img src="images/jobicon_monk.png" title="Monk" data-name="Monk">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_troubadour.png" title="Bard">
+                        <img src="images/jobicon_troubadour.png" title="Bard" data-name="Bard">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_troubadour.png" title="Bard">
+                            <img src="images/jobicon_troubadour.png" title="Bard" data-name="Bard">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_tamer.png" title="Beastmaster">
+                        <img src="images/jobicon_tamer.png" title="Beastmaster" data-name="Beastmaster">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_tamer.png" title="Beastmaster">
+                            <img src="images/jobicon_tamer.png" title="Beastmaster" data-name="Beastmaster">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_thief.png" title="Thief">
+                        <img src="images/jobicon_thief.png" title="Thief" data-name="Thief">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_thief.png" title="Thief">
+                            <img src="images/jobicon_thief.png" title="Thief" data-name="Thief">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_gambler.png" title="Gambler">
+                        <img src="images/jobicon_gambler.png" title="Gambler" data-name="Gambler">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_gambler.png" title="Gambler">
+                            <img src="images/jobicon_gambler.png" title="Gambler" data-name="Gambler">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_berzerk.png" title="Berserker">
+                        <img src="images/jobicon_berzerk.png" title="Berserker" data-name="Berserker">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_berzerk.png" title="Berserker">
+                            <img src="images/jobicon_berzerk.png" title="Berserker" data-name="Berserker">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_redmage.png" title="Red Mage">
+                        <img src="images/jobicon_redmage.png" title="Red Mage" data-name="Red Mage">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_redmage.png" title="Red Mage">
+                            <img src="images/jobicon_redmage.png" title="Red Mage" data-name="Red Mage">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_hunter.png" title="Ranger">
+                        <img src="images/jobicon_hunter.png" title="Ranger" data-name="Ranger">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_hunter.png" title="Ranger">
+                            <img src="images/jobicon_hunter.png" title="Ranger" data-name="Ranger">
                         </span>
                     </div>
                     
                 </div>
                 <div>
                     <div class="job-row">
-                        <img src="images/jobicon_shieldmaster.png" title="Shieldmaster">
+                        <img src="images/jobicon_shieldmaster.png" title="Shieldmaster" data-name="Shieldmaster">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_shieldmaster.png" title="Shieldmaster">
+                            <img src="images/jobicon_shieldmaster.png" title="Shieldmaster" data-name="Shieldmaster">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_pictomancer.png" title="Pictomancer">
+                        <img src="images/jobicon_pictomancer.png" title="Pictomancer" data-name="Pictomancer">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_pictomancer.png" title="Pictomancer">
+                            <img src="images/jobicon_pictomancer.png" title="Pictomancer" data-name="Pictomancer">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_dragoon.png" title="Dragoon">
+                        <img src="images/jobicon_dragoon.png" title="Dragoon" data-name="Dragoon">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_dragoon.png" title="Dragoon">
+                            <img src="images/jobicon_dragoon.png" title="Dragoon" data-name="Dragoon">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_spiritmaster.png" title="Spiritmaster">
+                        <img src="images/jobicon_spiritmaster.png" title="Spiritmaster" data-name="Spiritmaster">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_spiritmaster.png" title="Spiritmaster">
+                            <img src="images/jobicon_spiritmaster.png" title="Spiritmaster" data-name="Spiritmaster">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_swordmaster.png" title="Swordmaster">
+                        <img src="images/jobicon_swordmaster.png" title="Swordmaster" data-name="Swordmaster">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_swordmaster.png" title="Swordmaster">
+                            <img src="images/jobicon_swordmaster.png" title="Swordmaster" data-name="Swordmaster">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_oracle.png" title="Oracle">
+                        <img src="images/jobicon_oracle.png" title="Oracle" data-name="Oracle">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_oracle.png" title="Oracle">
+                            <img src="images/jobicon_oracle.png" title="Oracle" data-name="Oracle">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_salve-maker.png" title="Salve-Maker">
+                        <img src="images/jobicon_salve-maker.png" title="Salve-Maker" data-name="Salve-Maker">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_salve-maker.png" title="Salve-Maker">
+                            <img src="images/jobicon_salve-maker.png" title="Salve-Maker" data-name="Salve-Maker">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_arcanist.png" title="Arcanist">
+                        <img src="images/jobicon_arcanist.png" title="Arcanist" data-name="Arcanist">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_arcanist.png" title="Arcanist">
+                            <img src="images/jobicon_arcanist.png" title="Arcanist" data-name="Arcanist">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_bastion.png" title="Bastion">
+                        <img src="images/jobicon_bastion.png" title="Bastion" data-name="Bastion">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_bastion.png" title="Bastion">
+                            <img src="images/jobicon_bastion.png" title="Bastion" data-name="Bastion">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_phantom.png" title="Phantom">
+                        <img src="images/jobicon_phantom.png" title="Phantom" data-name="Phantom">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_phantom.png" title="Phantom">
+                            <img src="images/jobicon_phantom.png" title="Phantom" data-name="Phantom">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_hellblade.png" title="Hellblade">
+                        <img src="images/jobicon_hellblade.png" title="Hellblade" data-name="Hellblade">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_hellblade.png" title="Hellblade">
+                            <img src="images/jobicon_hellblade.png" title="Hellblade" data-name="Hellblade">
                         </span>
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_bravebearer.png" title="wth is this">
+                        <img src="images/jobicon_bravebearer.png" title="wth is this" data-name="Bravebearer">
                         <text>→</text>
                         <span class="shuffled-jobicon">
-                            <img src="images/jobicon_bravebearer.png" title="wth is this">
+                            <img src="images/jobicon_bravebearer.png" title="wth is this" data-name="Bravebearer">
                         </span>
                     </div>
                     
@@ -285,6 +296,38 @@
         <script>
         
         const jobsDiv = document.querySelector("#jobs");
+        
+        function getCouples() {
+            const imgs = Array.from(document.querySelectorAll("img"));
+            
+            const names = imgs.map(function(img) {
+                return img.getAttribute("data-name");
+            });
+            
+            let res = [];
+            
+            for(let i = 0; i < names.length; i += 2) {
+                res.push([names[i], names[i+1]]);
+            }
+            
+            return res;
+        }
+        
+        function padRight(text, length, fillCharacter = " ") {
+            text += "";
+            
+            while(text.length < length) {
+                text += fillCharacter;
+            }
+            
+            return text;
+        }
+        
+        function getTxt() {
+            return getCouples().map(function(couple) {
+                return padRight(couple[0], 12) + "    →   " + padRight(couple[1], 12);
+            }).join("\n");
+        }
         
         </script>
         <script>
@@ -307,6 +350,25 @@
                 
                 ++i;
             }
+        }
+        
+        function copyTxt() {
+            const textarea = document.createElement("textarea");
+            
+            textarea.value = getTxt();
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+        }
+        
+        function downloadTxt() {
+            const a = document.createElement("a");
+            
+            a.download = "shuffled-jobs.txt";
+            a.href = "data:text/txt," + getTxt();
+            
+            a.click();
         }
         
         </script>
