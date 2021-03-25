@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        
+        html {
+            height: 100%;
+        }
+        
+        body {
+            margin: 0;
+            height: 100%;
+            box-shadow: inset 0 0 1024px #7E462B;
+            background-color: #DFBE5F;
+        }
+        
+        button {
+            border-radius: 1024px;
+            border-color: #65371F;
+            background-color: #65371F;
+            color: white;
+            font-family: serif;
+            font-size: 1.125em;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #57331D;
+        }
+        
+        button:focus {
+            outline: none;
+        }
+        
+        main {
+            display: flex;
+        }
+        
+        #buttons {
+            padding: 16px 8px;
+        }
+        
+        #jobs {
+            display: flex;
+            padding: 16px 4px;
+        }
+        
+        #jobs > div {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #jobs > div:nth-child(2) {
+            margin-top: 8px;
+        }
+        
+        .job-row {
+            display: inline-flex;
+            align-items: center;
+            margin: 1px 8px;
+            border: 1px solid #17140D;
+            border-radius: 8px;
+            padding: 0px 8px;
+            background-color: #D1C59F;
+        }
+        
+        .job-row > text {
+            margin: 0 8px;
+            color: #65371F;
+            font-size: 2em;
+        }
+        
+        img {
+            width: 48px;
+            height: 48px;
+        }
+        
+        </style>
+    </head>
+    <body>
+        <main>
+            <div id="buttons">
+                <button onclick="shuffleJobs();">Shuffle</button>
+            </div>
+            <div id="jobs">
+                <div>
+                    <div class="job-row">
+                        <img src="images/jobicon_freelancer.png" title="Freelancer">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_freelancer.png" title="Freelancer">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_blackmage.png" title="Black Mage">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_blackmage.png" title="Black Mage">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_whitemage.png" title="White Mage">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_whitemage.png" title="White Mage">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_vanguard.png" title="Vanguard">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_vanguard.png" title="Vanguard">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_monk.png" title="Monk">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_monk.png" title="Monk">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_troubadour.png" title="Bard">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_troubadour.png" title="Bard">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_tamer.png" title="Beastmaster">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_tamer.png" title="Beastmaster">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_thief.png" title="Thief">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_thief.png" title="Thief">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_gambler.png" title="Gambler">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_gambler.png" title="Gambler">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_berzerk.png" title="Berserker">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_berzerk.png" title="Berserker">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_redmage.png" title="Red Mage">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_redmage.png" title="Red Mage">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_hunter.png" title="Ranger">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_hunter.png" title="Ranger">
+                        </span>
+                    </div>
+                    
+                </div>
+                <div>
+                    <div class="job-row">
+                        <img src="images/jobicon_shieldmaster.png" title="Shieldmaster">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_shieldmaster.png" title="Shieldmaster">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_pictomancer.png" title="Pictomancer">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_pictomancer.png" title="Pictomancer">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_dragoon.png" title="Dragoon">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_dragoon.png" title="Dragoon">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_spiritmaster.png" title="Spiritmaster">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_spiritmaster.png" title="Spiritmaster">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_swordmaster.png" title="Swordmaster">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_swordmaster.png" title="Swordmaster">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_oracle.png" title="Oracle">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_oracle.png" title="Oracle">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_salve-maker.png" title="Salve-Maker">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_salve-maker.png" title="Salve-Maker">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_arcanist.png" title="Arcanist">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_arcanist.png" title="Arcanist">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_bastion.png" title="Bastion">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_bastion.png" title="Bastion">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_phantom.png" title="Phantom">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_phantom.png" title="Phantom">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_hellblade.png" title="Hellblade">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_hellblade.png" title="Hellblade">
+                        </span>
+                    </div>
+                    
+                    <div class="job-row">
+                        <img src="images/jobicon_bravebearer.png" title="wth is this">
+                        <text>→</text>
+                        <span class="shuffled-jobicon">
+                            <img src="images/jobicon_bravebearer.png" title="wth is this">
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+        
+        <script>
+        
+        const jobsDiv = document.querySelector("#jobs");
+        
+        </script>
+        <script>
+        
+        function shuffleJobs() {
+            const jobIcons = Array.from(jobsDiv.querySelectorAll(".shuffled-jobicon > img"));
+            
+            for(let i = 0; i < jobIcons.length; ++i) {
+                jobIcons[i].remove();
+            }
+            
+            let i = 0;
+            
+            while(jobIcons.length > 0) {
+                const index = Math.floor(Math.random() * jobIcons.length);
+                
+                jobsDiv.querySelectorAll(".shuffled-jobicon")[i].appendChild(jobIcons[index]);
+                
+                jobIcons.splice(index, 1);
+                
+                ++i;
+            }
+        }
+        
+        </script>
+    </body>
+</html>
