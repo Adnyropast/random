@@ -18,25 +18,37 @@
         }
         
         button {
+            transition: 0.125s;
             border-radius: 1024px;
             border-color: #65371F;
             background-color: #65371F;
-            color: white;
+            color: lightGray;
             font-family: serif;
             font-size: 1.125em;
             cursor: pointer;
         }
         
         button:hover {
+            transition: 0s;
             background-color: #57331D;
+            color: white;
         }
         
         button:focus {
+            transition: 0s;
             outline: none;
+            /border-color: #A5775F;
+            background-color: #57331D;
+            color: white;
         }
         
         main {
             display: flex;
+        }
+        
+        hr {
+            border: none;
+            border-bottom: 1px solid #65371F;
         }
         
         #buttons {
@@ -71,6 +83,7 @@
             border-radius: 8px;
             padding: 0px 8px;
             background-color: #D1C59F;
+            user-select: none;
         }
         
         .job-row > text {
@@ -79,9 +92,30 @@
             font-size: 2em;
         }
         
-        img {
+        .job-row img {
             width: 48px;
             height: 48px;
+        }
+        
+        .shuffled-jobicon {
+            position: relative;
+        }
+        
+        .shuffled-jobicon > img {
+            cursor: grab;
+        }
+        
+        .shuffled-jobicon.hidden:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 1024px;
+            width: 48px;
+            height: 48px;
+            box-shadow: 2px 2px 2px #0000007F;
+            background: linear-gradient(135deg, black, #65371F);
+            cursor: pointer;
+            content: "";
         }
         
         </style>
@@ -90,13 +124,18 @@
         <main>
             <div id="buttons">
                 <button onclick="shuffleJobs();">Shuffle</button>
+                <button onclick="shuffleNoRepeat();" title="Makes sure every job is changed">No repeat</button>
+                <hr>
+                <button onclick="hideAll();" title="Hides all the jobs.&#10; Click on the icons to hide/reveal them.">Hide</button>
+                <button onclick="revealAll();" title="Reveals all the jobs.&#10;">Reveal</button>
+                <hr>
                 <button onclick="copyTxt();">Copy Text</button>
                 <button onclick="downloadTxt();">Download Text</button>
             </div>
             <div id="jobs">
                 <div>
                     <div class="job-row">
-                        <img src="images/jobicon_freelancer.png" title="Freelancer" data-name="Freelancer">
+                        <img src="images/jobicon_freelancer.png" title="Freelancer" data-name="Freelancer" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_freelancer.png" title="Freelancer" data-name="Freelancer">
@@ -104,7 +143,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_blackmage.png" title="Black Mage" data-name="Black Mage">
+                        <img src="images/jobicon_blackmage.png" title="Black Mage" data-name="Black Mage" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_blackmage.png" title="Black Mage" data-name="Black Mage">
@@ -112,7 +151,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_whitemage.png" title="White Mage" data-name="White Mage">
+                        <img src="images/jobicon_whitemage.png" title="White Mage" data-name="White Mage" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_whitemage.png" title="White Mage" data-name="White Mage">
@@ -120,7 +159,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_vanguard.png" title="Vanguard" data-name="Vanguard">
+                        <img src="images/jobicon_vanguard.png" title="Vanguard" data-name="Vanguard" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_vanguard.png" title="Vanguard" data-name="Vanguard">
@@ -128,7 +167,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_monk.png" title="Monk" data-name="Monk">
+                        <img src="images/jobicon_monk.png" title="Monk" data-name="Monk" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_monk.png" title="Monk" data-name="Monk">
@@ -136,7 +175,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_troubadour.png" title="Bard" data-name="Bard">
+                        <img src="images/jobicon_troubadour.png" title="Bard" data-name="Bard" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_troubadour.png" title="Bard" data-name="Bard">
@@ -144,7 +183,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_tamer.png" title="Beastmaster" data-name="Beastmaster">
+                        <img src="images/jobicon_tamer.png" title="Beastmaster" data-name="Beastmaster" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_tamer.png" title="Beastmaster" data-name="Beastmaster">
@@ -152,7 +191,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_thief.png" title="Thief" data-name="Thief">
+                        <img src="images/jobicon_thief.png" title="Thief" data-name="Thief" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_thief.png" title="Thief" data-name="Thief">
@@ -160,7 +199,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_gambler.png" title="Gambler" data-name="Gambler">
+                        <img src="images/jobicon_gambler.png" title="Gambler" data-name="Gambler" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_gambler.png" title="Gambler" data-name="Gambler">
@@ -168,7 +207,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_berzerk.png" title="Berserker" data-name="Berserker">
+                        <img src="images/jobicon_berzerk.png" title="Berserker" data-name="Berserker" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_berzerk.png" title="Berserker" data-name="Berserker">
@@ -176,7 +215,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_redmage.png" title="Red Mage" data-name="Red Mage">
+                        <img src="images/jobicon_redmage.png" title="Red Mage" data-name="Red Mage" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_redmage.png" title="Red Mage" data-name="Red Mage">
@@ -184,7 +223,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_hunter.png" title="Ranger" data-name="Ranger">
+                        <img src="images/jobicon_hunter.png" title="Ranger" data-name="Ranger" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_hunter.png" title="Ranger" data-name="Ranger">
@@ -194,7 +233,7 @@
                 </div>
                 <div>
                     <div class="job-row">
-                        <img src="images/jobicon_shieldmaster.png" title="Shieldmaster" data-name="Shieldmaster">
+                        <img src="images/jobicon_shieldmaster.png" title="Shieldmaster" data-name="Shieldmaster" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_shieldmaster.png" title="Shieldmaster" data-name="Shieldmaster">
@@ -202,7 +241,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_pictomancer.png" title="Pictomancer" data-name="Pictomancer">
+                        <img src="images/jobicon_pictomancer.png" title="Pictomancer" data-name="Pictomancer" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_pictomancer.png" title="Pictomancer" data-name="Pictomancer">
@@ -210,7 +249,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_dragoon.png" title="Dragoon" data-name="Dragoon">
+                        <img src="images/jobicon_dragoon.png" title="Dragoon" data-name="Dragoon" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_dragoon.png" title="Dragoon" data-name="Dragoon">
@@ -218,7 +257,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_spiritmaster.png" title="Spiritmaster" data-name="Spiritmaster">
+                        <img src="images/jobicon_spiritmaster.png" title="Spiritmaster" data-name="Spiritmaster" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_spiritmaster.png" title="Spiritmaster" data-name="Spiritmaster">
@@ -226,7 +265,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_swordmaster.png" title="Swordmaster" data-name="Swordmaster">
+                        <img src="images/jobicon_swordmaster.png" title="Swordmaster" data-name="Swordmaster" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_swordmaster.png" title="Swordmaster" data-name="Swordmaster">
@@ -234,7 +273,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_oracle.png" title="Oracle" data-name="Oracle">
+                        <img src="images/jobicon_oracle.png" title="Oracle" data-name="Oracle" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_oracle.png" title="Oracle" data-name="Oracle">
@@ -242,7 +281,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_salve-maker.png" title="Salve-Maker" data-name="Salve-Maker">
+                        <img src="images/jobicon_salve-maker.png" title="Salve-Maker" data-name="Salve-Maker" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_salve-maker.png" title="Salve-Maker" data-name="Salve-Maker">
@@ -250,7 +289,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_arcanist.png" title="Arcanist" data-name="Arcanist">
+                        <img src="images/jobicon_arcanist.png" title="Arcanist" data-name="Arcanist" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_arcanist.png" title="Arcanist" data-name="Arcanist">
@@ -258,7 +297,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_bastion.png" title="Bastion" data-name="Bastion">
+                        <img src="images/jobicon_bastion.png" title="Bastion" data-name="Bastion" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_bastion.png" title="Bastion" data-name="Bastion">
@@ -266,7 +305,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_phantom.png" title="Phantom" data-name="Phantom">
+                        <img src="images/jobicon_phantom.png" title="Phantom" data-name="Phantom" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_phantom.png" title="Phantom" data-name="Phantom">
@@ -274,7 +313,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_hellblade.png" title="Hellblade" data-name="Hellblade">
+                        <img src="images/jobicon_hellblade.png" title="Hellblade" data-name="Hellblade" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_hellblade.png" title="Hellblade" data-name="Hellblade">
@@ -282,7 +321,7 @@
                     </div>
                     
                     <div class="job-row">
-                        <img src="images/jobicon_bravebearer.png" title="wth is this" data-name="Bravebearer">
+                        <img src="images/jobicon_bravebearer.png" title="wth is this" data-name="Bravebearer" draggable="false">
                         <text>→</text>
                         <span class="shuffled-jobicon">
                             <img src="images/jobicon_bravebearer.png" title="wth is this" data-name="Bravebearer">
@@ -295,7 +334,53 @@
         
         <script>
         
+        function hasClass(element, className) {
+            const regExp = new RegExp("(^|\\s+)" + className + "(\\s+|$)", "g");
+            
+            return element.className.match(regExp);
+        }
+        
+        function addClass(element, className) {
+            const classNames = className.trim().split(/\s+/);
+            
+            for(let i = 0; i < classNames.length; ++i) {
+                const className = classNames[i];
+                
+                if(!hasClass(element, className)) {
+                    element.className += ' ' + className;
+                }
+            }
+            
+            element.className = element.className.replace(/\s+/g, " ").trim();
+            
+            return element;
+        }
+        
+        function removeClass(element, className) {
+            const classNames = className.trim().split(/\s+/);
+            
+            for(let i = 0; i < classNames.length; ++i) {
+                const className = classNames[i];
+                
+                const regExp = new RegExp("(^|\\s+)(" + className + ")\\b", "g");
+                
+                element.className = element.className.replace(regExp, "");
+            }
+            
+            element.className = element.className.replace(/\s+/g, ' ').trim();
+            
+            if(element.className === "") {
+                element.removeAttribute("class");
+            }
+            
+            return element;
+        }
+        
+        </script>
+        <script>
+        
         const jobsDiv = document.querySelector("#jobs");
+        const jobs = ["Freelancer", "Black Mage", "White Mage", "Vanguard", "Monk", "Bard", "Beastmaster", "Thief", "Gambler", "Berserker", "Red Mage", "Ranger", "Shieldmaster", "Pictomancer", "Dragoon", "Spiritmaster", "Swordmaster", "Oracle", "Salve-Maker", "Arcanist", "Bastion", "Phantom", "Hellblade", "Bravebearer"];
         
         function getCouples() {
             const imgs = Array.from(document.querySelectorAll("img"));
@@ -329,6 +414,120 @@
             }).join("\n");
         }
         
+        function pairsFromString(string) {
+            const pairs = string.split(/\n/g).map(function(row) {
+                return row.split(/→/).map(function(part) {
+                    return part.trim();
+                });
+            });
+            
+            if(validPairs(pairs)) {
+                return pairs;
+            }
+            
+            throw new Error("Invalid string");
+        }
+        
+        function validPairs(pairs) {
+            const jobs1 = Array.from(jobs);
+            const jobs2 = Array.from(jobs);
+            
+            let valid = true;
+            
+            for(let i = 0; i < 24 && valid; ++i) {
+                const index1 = jobs1.indexOf(pairs[i][0]);
+                const index2 = jobs2.indexOf(pairs[i][1]);
+                
+                if(index1 === -1 || index2 === -1) {
+                    valid = false;
+                } else {
+                    jobs1.splice(index1, 1);
+                    jobs2.splice(index2, 1);
+                }
+            }
+            
+            return valid && jobs1.length === 0 && jobs2.length === 0;
+        }
+        
+        function load(pairs) {
+            for(let i = 0; i < pairs.length; ++i) {
+                const span1 = document.querySelector(".job-row > img[data-name='" + pairs[i][0] + "']").parentElement.querySelector(".shuffled-jobicon");
+                const span2 = document.querySelector(".shuffled-jobicon > img[data-name='" + pairs[i][1] + "']").parentElement;
+                
+                span1.appendChild(span2.querySelector("img"));
+                span2.appendChild(span1.querySelector("img"));
+            }
+        }
+        
+        function loadTxt(string) {
+            load(pairsFromString(string));
+        }
+        
+        </script>
+        <script>
+        
+        let dragContainer = null;
+        
+        Array.from(document.querySelectorAll(".shuffled-jobicon")).forEach(function(span, index) {
+            if(index >= 2) {
+                // addClass(span, "hidden");
+            }
+            
+            span.addEventListener("click", function(event) {
+                if(hasClass(this, "hidden")) {
+                    removeClass(this, "hidden");
+                } else {
+                    addClass(this, "hidden");
+                }
+            });
+            
+            span.addEventListener("dragstart", function(event) {
+                if(!hasClass(this, "hidden")) {
+                    dragContainer = this;
+                }
+            });
+            
+            span.addEventListener("dragend", function(event) {
+                dragContainer = null;
+            });
+            
+            span.addEventListener("dragover", function(event) {
+                event.preventDefault();
+            });
+            
+            span.addEventListener("drop", function(event) {
+                if(dragContainer !== null && !hasClass(this, "hidden")) {
+                    this.appendChild(dragContainer.querySelector("img"));
+                    dragContainer.appendChild(this.querySelector("img"));
+                    dragContainer = null;
+                }
+            });
+        });
+        
+        addEventListener("dragover", function(event) {
+            event.preventDefault();
+        });
+        
+        addEventListener("drop", function(event) {
+            event.preventDefault();
+            
+            const file = event.dataTransfer.files[0];
+            
+            if(file instanceof File) {
+                const fileReader = new FileReader();
+                
+                fileReader.onload = function() {
+                    try {
+                        loadTxt(this.result);
+                    } catch(e) {
+                        
+                    }
+                };
+                
+                fileReader.readAsText(file);
+            }
+        });
+        
         </script>
         <script>
         
@@ -345,6 +544,39 @@
                 const index = Math.floor(Math.random() * jobIcons.length);
                 
                 jobsDiv.querySelectorAll(".shuffled-jobicon")[i].appendChild(jobIcons[index]);
+                
+                jobIcons.splice(index, 1);
+                
+                ++i;
+            }
+        }
+        
+        function shuffleNoRepeat() {
+            const jobIcons = Array.from(document.querySelectorAll(".shuffled-jobicon > img"));
+            
+            for(let i = 0; i < jobIcons.length; ++i) {
+                jobIcons[i].remove();
+            }
+            
+            let i = 0;
+            
+            while(jobIcons.length > 0) {
+                const currentJob = document.querySelectorAll(".job-row > img")[i].getAttribute("data-name");
+                
+                const filteredJobs = Array.from(jobIcons).filter(function(jobIcon) {
+                    return jobIcon.getAttribute("data-name") !== currentJob;
+                });
+                
+                let index;
+                
+                if(jobIcons.length === 2 && (index = jobIcons.findIndex(function(jobIcon) { return jobIcon.getAttribute("data-name") === jobs.slice(-1)[0]; })) > -1) {
+                    
+                } else {
+                    index = Math.floor(Math.random() * filteredJobs.length);
+                    index = jobIcons.indexOf(filteredJobs[index]);
+                }
+                
+                document.querySelectorAll(".shuffled-jobicon")[i].appendChild(jobIcons[index]);
                 
                 jobIcons.splice(index, 1);
                 
@@ -369,6 +601,18 @@
             a.href = "data:text/txt," + getTxt();
             
             a.click();
+        }
+        
+        function hideAll() {
+            Array.from(document.querySelectorAll(".shuffled-jobicon")).forEach(function(span) {
+                addClass(span, "hidden");
+            });
+        }
+        
+        function revealAll() {
+            Array.from(document.querySelectorAll(".shuffled-jobicon")).forEach(function(span) {
+                removeClass(span, "hidden");
+            });
         }
         
         </script>
