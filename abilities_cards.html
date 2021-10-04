@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>BDII Abilities Cards</title>
+        <link rel="icon" href="images/asterisk.png">
+        
+        <style>
+        
+        html {
+            height: 100%;
+        }
+        
+        body {
+            margin: 0;
+            padding: 16px;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #D3BE87;
+            box-shadow: inset 0 0 128px #81482A;
+        }
+        
+        .member {
+            padding: 16px;
+            width: 25%;
+        }
+        
+        .member > h1 {
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            color: white;
+        }
+        
+        .member > hr {
+            border: none;
+            border-bottom: 1px solid #0000003F;
+            margin-bottom: 16px;
+        }
+        
+        .member .job-row {
+            display: flex;
+            align-items: center;
+        }
+        
+        .member img {
+            width: 48px;
+        }
+        
+        .member select {
+            border: none;
+            border-bottom: 1px solid #0000003F;
+            background: transparent;
+            cursor: pointer;
+            font-size: 20px;
+            font-family: serif;
+        }
+        
+        .member select:hover {
+            background-color: #FFFFFF1F;
+        }
+        
+        .member select:focus {
+            background: white;
+        }
+        
+        .cards {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #00000000;
+            border-left: none;
+            border-right: none;
+            padding: 4px 16px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.03125s, padding 0.125s;
+        }
+        
+        .card:hover {
+            border-color: #FFFF007F;
+            padding-left: 20px;
+            box-shadow: 0 0 10px #FFFF003F;
+            background: #FFFF003F;
+            transition: 0s;
+        }
+        
+        .card:active {
+            border-color: #FFFF007F;
+            box-shadow: 0 0 16px #FFFF003F;
+            background: #FFFF005F;
+            transition: 0s;
+        }
+        
+        .card > img {
+            width: 32px;
+            margin-right: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #members {
+            display: flex;
+        }
+        
+        button {
+            border: none;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: serif;
+        }
+        
+        </style>
+    </head>
+    <body>
+        <div>
+            <button onclick='shuffle();'>Shuffle</button>
+        </div>
+        
+        <div class="member hidden">
+            <h1>Seth</h1>
+            
+            <hr>
+            
+            <div class="job-row">
+                <img>
+                <select class="main-job"></select>
+            </div>
+            <div class="job-row">
+                <img>
+                <select class="sub-job"></select>
+            </div>
+            
+            <hr>
+            
+            <div class="cards"></div>
+        </div>
+        
+        <div id="members"></div>
+        
+        <script id="misc">
+        
+        function loadImage(src) {
+            const img = document.createElement("img");
+            
+            img.src = src;
+            
+            return img;
+        }
+        
+        function array_shuffle(array) {
+            const clone = Array.from(array);
+            array.length = 0;
+            
+            while(clone.length > 0) {
+                const index = Math.floor(Math.random() * clone.length);
+                
+                array.push(clone[index]);
+                clone.splice(index, 1);
+            }
+            
+            return array;
+        }
+        
+        </script>
+        <script>
+        
+        const membersDiv = document.querySelector("#members");
+        
+        </script>
+        <script>
+        
+        function addMember(name) {
+            const div = document.createElement("div");
+            
+            div.className = "member";
+            
+            div.appendChild((function() {
+                const h = document.createElement("h1");
+                
+                h.innerHTML = name;
+                
+                return h;
+            })());
+            
+            div.appendChild((function() {
+                const hr = document.createElement("hr");
+                
+                return hr;
+            })());
+            
+            div.appendChild((function() {
+                const div = document.createElement("div");
+                
+                div.className = "job-row";
+                
+                div.appendChild((function() {
+                    const img = document.createElement("img");
+                    
+                    return img;
+                })());
+                
+                div.appendChild((function() {
+                    const select = document.createElement("select");
+                    
+                    select.className = "main-job";
+                    
+                    return select;
+                })());
+                
+                return div;
+            })());
+            
+            div.appendChild((function() {
+                const div = document.createElement("div");
+                
+                div.className = "job-row";
+                
+                div.appendChild((function() {
+                    const img = document.createElement("img");
+                    
+                    return img;
+                })());
+                
+                div.appendChild((function() {
+                    const select = document.createElement("select");
+                    
+                    select.className = "sub-job";
+                    
+                    return select;
+                })());
+                
+                return div;
+            })());
+            
+            div.appendChild((function() {
+                const hr = document.createElement("hr");
+                
+                return hr;
+            })());
+            
+            div.appendChild((function() {
+                const div = document.createElement("div");
+                
+                div.className = "cards";
+                
+                return div;
+            })());
+            
+            membersDiv.appendChild(div);
+            
+            return div;
+        }
+        
+        addMember("Seth");
+        addMember("Gloria");
+        addMember("Elvis");
+        addMember("Adelle");
+        
+        </script>
+        <script id="data-jobs">
+        
+        const jobs = ["Freelancer", "Black Mage", "White Mage", "Vanguard", "Monk", "Bard", "Beastmaster", "Thief", "Gambler", "Berserker", "Red Mage", "Ranger", "Shieldmaster", "Pictomancer", "Dragoon", "Spiritmaster", "Swordmaster", "Oracle", "Salve-Maker", "Arcanist", "Bastion", "Phantom", "Hellblade", "Bravebearer"];
+        const imgs = new Map();
+        
+        const imgPath = "images/jobicons/";
+        
+        imgs.set("None",            loadImage(imgPath + "none.png"));
+        imgs.set("Freelancer",      loadImage(imgPath + "freelancer.png"));
+        imgs.set("Black Mage",      loadImage(imgPath + "black_mage.png"));
+        imgs.set("White Mage",      loadImage(imgPath + "white_mage.png"));
+        imgs.set("Vanguard",        loadImage(imgPath + "vanguard.png"));
+        imgs.set("Monk",            loadImage(imgPath + "monk.png"));
+        imgs.set("Bard",            loadImage(imgPath + "bard.png"));
+        imgs.set("Beastmaster",     loadImage(imgPath + "beastmaster.png"));
+        imgs.set("Thief",           loadImage(imgPath + "thief.png"));
+        imgs.set("Gambler",         loadImage(imgPath + "gambler.png"));
+        imgs.set("Berserker",       loadImage(imgPath + "berserker.png"));
+        imgs.set("Red Mage",        loadImage(imgPath + "red_mage.png"));
+        imgs.set("Ranger",          loadImage(imgPath + "ranger.png"));
+        imgs.set("Shieldmaster",    loadImage(imgPath + "shieldmaster.png"));
+        imgs.set("Pictomancer",     loadImage(imgPath + "pictomancer.png"));
+        imgs.set("Dragoon",         loadImage(imgPath + "dragoon.png"));
+        imgs.set("Spiritmaster",    loadImage(imgPath + "spiritmaster.png"));
+        imgs.set("Swordmaster",     loadImage(imgPath + "swordmaster.png"));
+        imgs.set("Oracle",          loadImage(imgPath + "oracle.png"));
+        imgs.set("Salve-Maker",     loadImage(imgPath + "salve-maker.png"));
+        imgs.set("Arcanist",        loadImage(imgPath + "arcanist.png"));
+        imgs.set("Bastion",         loadImage(imgPath + "bastion.png"));
+        imgs.set("Phantom",         loadImage(imgPath + "phantom.png"));
+        imgs.set("Hellblade",       loadImage(imgPath + "hellblade.png"));
+        imgs.set("Bravebearer",     loadImage(imgPath + "bravebearer.png"));
+        
+        </script>
+        <script id="shuffle">
+        
+        const allActives = {
+            
+            "None": [],
+            
+            "Freelancer": [
+                "Examine",
+                "Treat",
+                "Forage",
+                "Lucky Charm",
+                "Purge",
+                "Square One",
+                "Body Slam",
+                "Wish Upon a Star",
+                "Mimic"
+            ],
+            
+            "Black Mage": [
+                "Fire",
+                "Blizzard",
+                "Thunder",
+                "Poison",
+                "Fira",
+                "Blizzara",
+                "Thundara",
+                "Firaga",
+                "Blizzaga",
+                "Thundaga",
+                "Flare",
+                "Freeze",
+                "Burst"
+            ],
+            
+            "White Mage": [
+                "Cure",
+                "Protect",
+                "Shell",
+                "Raise",
+                "Cura",
+                "Benediction",
+                "Basuna",
+                "Arise",
+                "Curaga",
+                "Esuna",
+                "Raise All"
+            ],
+            
+            "Vanguard": [
+                "Cross Cut",
+                "Shield Bash",
+                "Defang",
+                "Skull Bash",
+                "Aggravate",
+                "Sword of Stone",
+                "Shield Stun",
+                "Enrage",
+                "The Gift of Courage",
+                "Neo Cross Slash",
+                "Infuriate",
+                "Quake Blade",
+                "Ultimatum"
+            ],
+            
+            "Monk": [
+                "Strong Strike",
+                "Inner Alchemy",
+                "Firebird",
+                "Qigong Wave",
+                "Mindfulness",
+                "Flying Heel Drop",
+                "Invigorate",
+                "Tortoise Kick",
+                "Flames of War",
+                "Pressure Point",
+                "Focal Blast",
+                "Phoenix Flight"
+            ],
+            
+            "Bard": [
+                "Don't Let 'Em Get to You",
+                "Don't Let 'Em Trick You",
+                "Step into the Spotlight",
+                "Close Those Tired Eyes",
+                "(Won't) Be Missing You",
+                "Right Through Your Fingers",
+                "Hurts So Bad",
+                "Work Your Magic",
+                "All Killer No Filler",
+                "Screamin' It Out",
+                "Shut Up and Dance",
+                "Thank You, and Goodnight",
+                "More! Mooore!"
+            ],
+            
+            "Beastmaster": [
+                "Capture",
+                "Off the Leash",
+                "Staggering Swipe",
+                "Muzzle",
+                "Mow Down",
+                "Mercy Strike",
+                "Mercy Smash",
+                "Off the Chain",
+                "Muzzling Maelstrom",
+                "Nature's Blessing"
+            ],
+            
+            "Thief": [
+                "Steal",
+                "Steal Breath",
+                "Flee",
+                "Steal Spirit",
+                "Sky Slicer",
+                "Steal Courage",
+                "Godspeed Strike",
+                "You Snooze, You Lose",
+                "Tornado's Edge"
+            ],
+            
+            "Gambler": [
+                "Odds or Evens",
+                "Life or Death",
+                "Flash the Cash",
+                "Spin the Wheel",
+                "Elemental Wheel",
+                "Triples",
+                "Bold Gambit",
+                "High Roller",
+                "Dealer's Choice",
+                "Real Elemental Wheel",
+                "Unlucky Eight"
+            ],
+            
+            "Berserker": [
+                "Crescent Moon",
+                "Vent Fury",
+                "Double Damage",
+                "Water Damage",
+                "Shell Split",
+                "Scale Strip",
+                "Level Slash",
+                "Amped Strike",
+                "Flood Damage",
+                "Death's Door"
+            ],
+            
+            "Red Mage": [
+                "Stone",
+                "Aero",
+                "Heal",
+                "Stonera",
+                "Aerora",
+                "Healara",
+                "Healaga",
+                "Stonega",
+                "Aeroga",
+                "Disaster",
+                "Quake",
+                "Tornado"
+            ],
+            
+            "Ranger": [
+                "Bug Slayer",
+                "Plant Slayer",
+                "Shadowbind",
+                "Beast Slayer",
+                "Aquatic Slayer",
+                "Quickfire Flurry",
+                "Humanoid Slayer",
+                "Sloth Hunter",
+                "Undead Slayer",
+                "Demon Slayer",
+                "Spirit Slayer",
+                "Grand Barrage"
+            ],
+            
+            "Shieldmaster": [
+                "Bodyguard",
+                "Blinding Flash",
+                "Crushed Ice",
+                "Reprisal",
+                "Defender of the People",
+                "Heavy Hitter",
+                "Bumblewhacker",
+                "The Gift of Wisdom",
+                "Super Heavy Hitter",
+                "Firmly Grounded",
+                "Harsh Reprisal"
+            ],
+            
+            "Pictomancer": [
+                "Disarming Scarlet",
+                "Splatter",
+                "Disenchanting Mauve",
+                "Purify",
+                "Incurable Coral",
+                "Freehand",
+                "Indefensible Teal",
+                "Zappable Chartreuse",
+                "Chiaro",
+                "Scuro",
+                "Brush with Death",
+                "Mass Production"
+            ],
+            
+            "Dragoon": [
+                "Jump",
+                "Sonic Thrust",
+                "Thunder Thrust",
+                "Spirit Surge",
+                "Angon",
+                "Suffer in Silence",
+                "Soul Jump",
+                "Spirit-Crusher",
+                "Bolt Blast",
+                "Super Jump"
+            ],
+            
+            "Spiritmaster": [
+                "Healthbringer",
+                "Banish",
+                "Devotion",
+                "Regeneration",
+                "Banishra",
+                "Reraise",
+                "Spiritbringer",
+                "Basunabringer",
+                "Banishga",
+                "Purebringer",
+                "Holy",
+                "Lifebringer",
+                "Bravebringer"
+            ],
+            
+            "Swordmaster": [
+                "Solid Stance",
+                "Fluid Stance",
+                "Solid Right Style",
+                "Fluid Left Style",
+                "Divide Attention",
+                "Fourfold Flurry",
+                "Solid Slash",
+                "Fluid Flow",
+                "Ninefold Flurry",
+                "Solid Smash",
+                "Fluid Frenzy"
+            ],
+            
+            "Oracle": [
+                "Quick",
+                "Slow",
+                "Haste",
+                "Elemental Impairment",
+                "Triple",
+                "Elemental Supplement",
+                "Reflect",
+                "Stop",
+                "Elemental Ward",
+                "Triplara",
+                "Hastega",
+                "Quickga",
+                "Slowga",
+                "Triplaga"
+            ],
+            
+            "Salve-Maker": [
+                "Compounding",
+                "Survey",
+                "Widen Area",
+                "Philtre",
+                "Revive",
+                "Heartbreak",
+                "BP Tonic",
+                "BP Depleter",
+                "Analysis",
+                "Advanced Compounding",
+                "Double BP Tonic",
+                "Multimix Elixir"
+            ],
+            
+            "Arcanist": [
+                "Dark",
+                "Ardour",
+                "Drain",
+                "Darkra",
+                "Electon",
+                "Aspir",
+                "Darkga",
+                "Meltdown",
+                "Death",
+                "Comet",
+                "Doomsday",
+                "Apocalypse",
+                "Meteor"
+            ],
+            
+            "Bastion": [
+                "Bulwark",
+                "Phalanx",
+                "Rampart",
+                "Vallation",
+                "Light of Justice",
+                "Wall",
+                "Blindsider",
+                "Double Default",
+                "Sanctuary",
+                "Holy Light",
+                "Corporal Punishment"
+            ],
+            
+            "Phantom": [
+                "Recurring Nightmare",
+                "Become the Lightning",
+                "Dream Within a Dream",
+                "Shroud",
+                "Milk Poison",
+                "Flit",
+                "Sick Twist",
+                "Never-Ending Nightmare",
+                "Burial Shroud",
+                "Ethereal Edge"
+            ],
+            
+            "Hellblade": [
+                "Ruby Blades",
+                "Sapphire Blades",
+                "Dread Blade",
+                "Diamond Blades",
+                "Minus Strike",
+                "Carnelian Blades",
+                "Emerald Blades",
+                "Terrorise",
+                "Quartz Blades",
+                "Onyx Blades",
+                "Death Throes",
+                "Ultima Sword",
+                "Deathstorm"
+            ],
+            
+            "Bravebearer": [
+                "Supergravity",
+                "Wall of Woe",
+                "Practice Makes Perfect",
+                "Dawn of Odyssey",
+                "Hypergravity",
+                "Equaliser",
+                "Victory Smite",
+                "Gigagravity",
+                "Victory Double",
+                "BP Bump",
+                "Best Practice"
+            ],
+            
+        };
+        
+        function getActives(job) {
+            return allActives[job] || [];
+        }
+        
+        function getAbilityJob(ability) {
+            for(let i in allActives) {
+                if(allActives[i].includes(ability)) {
+                    return i;
+                }
+            }
+            
+            return "None";
+        }
+        
+        const decks = new Map();
+        
+        function shuffle() {
+            Array.from(document.querySelectorAll(".member")).forEach(function(div) {
+                const mainJobSelect = div.querySelector("select.main-job");
+                const subJobSelect = div.querySelector("select.sub-job");
+                const cardsDiv = div.querySelector("div.cards");
+                
+                const abilities = [
+                    ...getActives(mainJobSelect.value),
+                    ...getActives(subJobSelect.value)
+                ];
+                
+                array_shuffle(abilities);
+                
+                cardsDiv.innerHTML = "";
+                
+                function addCard(ability) {
+                    cardsDiv.appendChild((function() {
+                        const element = document.createElement("div");
+                        
+                        element.className = "card";
+                        
+                        element.appendChild((function() {
+                            const img = document.createElement("img");
+                            
+                            img.src = imgs.get(getAbilityJob(ability)).src;
+                            
+                            return img;
+                        })());
+                        
+                        element.appendChild((function() {
+                            const text = document.createElement("text");
+                            
+                            text.innerHTML = ability;
+                            
+                            return text;
+                        })());
+                        
+                        element.addEventListener("click", function() {
+                            const index = abilities.indexOf(ability);
+                            
+                            abilities.push(abilities.splice(index, 1)[0]);
+                            
+                            element.remove();
+                            addCard(abilities[5-1]);
+                        });
+                        
+                        return element;
+                    })());
+                }
+                
+                for(let i = 0; i < 5; ++i) {
+                    addCard(abilities[i]);
+                }
+            });
+        }
+        
+        </script>
+        <script id="select-fill">
+        
+        Array.from(document.querySelectorAll("select.main-job")).forEach(function(select) {
+            for(let i = 0; i < jobs.length; ++i) {
+                select.appendChild((function() {
+                    const option = document.createElement("option");
+                    
+                    option.innerHTML = jobs[i];
+                    
+                    return option;
+                })());
+            }
+            
+            const img = select.parentElement.querySelector("img");
+            
+            select.addEventListener("input", function() {
+                img.src = imgs.get(this.value).src;
+                
+                shuffle();
+            });
+            
+            select.dispatchEvent(new Event("input"));
+        });
+        
+        Array.from(document.querySelectorAll("select.sub-job")).forEach(function(select) {
+            select.appendChild((function() {
+                const option = document.createElement("option");
+                
+                option.innerHTML = "None";
+                
+                return option;
+            })());
+            
+            for(let i = 0; i < jobs.length; ++i) {
+                select.appendChild((function() {
+                    const option = document.createElement("option");
+                    
+                    option.innerHTML = jobs[i];
+                    
+                    return option;
+                })());
+            }
+            
+            const img = select.parentElement.querySelector("img");
+            
+            select.addEventListener("input", function() {
+                img.src = imgs.get(this.value).src;
+                
+                shuffle();
+            });
+            
+            select.dispatchEvent(new Event("input"));
+        });
+        
+        </script>
+    </body>
+</html>
