@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        
+        html {
+            height: 100%;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            height: 100%;
+            background: radial-gradient(#D1BE84, #C8AD68);
+            box-shadow: inset 0 0 128px #78572A;
+        }
+        
+        button {
+            border-radius: 1024px;
+            border: 1px solid #231202;
+            padding: 4px 8px;
+            background: #654224;
+            color: white;
+            font-size: 0.625em;
+            -webkit-text-stroke : 0.0125em black;
+            cursor: pointer;
+        }
+        
+        button:active {
+            background: #5C310E;
+        }
+        
+        #pgDiv {
+            padding: 0 32px;
+            text-align: right;
+            font-size: 24px;
+        }
+        
+        #pgDiv > div {
+            display: inline-block;
+            padding: 16px 8px 8px 8px;
+            min-width: 128px;
+            background: radial-gradient(#DFD2A8, #C0AB6C);
+            box-shadow: inset 0 0 16px #82462A, 0 0 8px #0000007F;
+        }
+        
+        #rewards {
+            display: inline-block;
+            padding: 8px;
+            font-size: 24px;
+            background: #000000BF;
+            box-shadow: 0 0 8px #0000007F;
+        }
+        
+        .field {
+            display: flex;
+            margin: 0.5em 0;
+        }
+        
+        #rewards table {
+            border-collapse: collapse;
+        }
+        
+        #rewards table tr {
+            border-top: 0.125em solid #5F583C;
+            border-bottom: 0.125em solid #5F583C;
+        }
+        
+        #rewards table .label {
+            padding: 0 2px;
+            font-weight: 1000;
+            color: #BB983A;
+            -webkit-text-stroke : 0.0125em black;
+        }
+        
+        #rewards table input {
+            outline: none;
+            border: none;
+            border-bottom: 0.0625em solid #FFFFFF3F;
+            margin: 8px 2px;
+            text-align: right;
+            font-weight: 1000;
+            font-size: 1em;
+            font-family: inherit;
+            background: transparent;
+            color: white;
+            -webkit-text-stroke : 0.0125em black;
+        }
+        
+        #rewards table input:focus {
+            background: #FFFFFF3F;
+        }
+        
+        #rewards .buttons {
+            text-align: right;
+        }
+        
+        #characters {
+            display: flex;
+            box-shadow: 0 0 8px #0000007F;
+        }
+        
+        #characters > * {
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        .character-card {
+            position: relative;
+            padding: 8px;
+            background: #000000BF;
+            color: white;
+            font-size: 18px;
+            -webkit-text-stroke : 0.0125em black;
+        }
+        
+        .character-card:not(.active) {
+            color: grey;
+        }
+        
+        .character-card > .buttons {
+            margin-top: 16px;
+            text-align: right;
+        }
+        
+        .character-card > hr {
+            margin: 0.25em 0;
+        }
+        
+        .character, .exp-values, .job, .jp-values {
+            display: flex;
+        }
+        
+        .level, .values {
+            flex-grow: 1;
+            display: inline-block;
+            text-align: right;
+        }
+        
+        .bar {
+            display: flex;
+            margin-bottom: 8px;
+            border-radius: 1024px;
+            width: 100%;
+            height: 0.25em;
+            background: #000000;
+            overflow: hidden;
+        }
+        
+        .bar > .gauge {
+            height: 100%;
+            transition: 0.25s;
+        }
+        
+        .bar.exp-bar > .gauge {
+            background: linear-gradient(#B0802B, #8F5200);
+        }
+        
+        .bar.jp-bar > .gauge {
+            background: linear-gradient(#9F553C, #9F553C);
+        }
+        
+        .character-card .job {
+            display: flex;
+            align-items: center;
+        }
+        
+        .character-card .job .icon {
+            height: 1.5em;
+        }
+        
+        .character-card .job .name {
+            border: none;
+            background-color: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        .character-card .job .name > option {
+            background: black;
+            font-size: 0.875em;
+        }
+        
+        #logTextarea {
+            flex-grow: 1;
+            width: 100%;
+            box-sizing: border-box;
+            resize: initial;
+            background: #0000007F;
+            color: white;
+        }
+        
+        #logTextarea:focus {
+            background: #0000006F;
+        }
+        
+        </style>
+    </head>
+    <body>
+        <div id="pgDiv">
+            <div>
+                <span class="value">0</span>
+                <span>pg</span>
+            </div>
+        </div>
+        
+        <div>
+            <div id="rewards">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">EXP.</td>
+                            <td><input id="exp" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="label">JP</td>
+                            <td><input id="jp" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="label">pg</td>
+                            <td><input id="pg" placeholder="0"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="buttons">
+                    <button onclick='confirm();'>Confirm</button>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div id="characters">
+            <div class="character-card active">
+                <div class="character">
+                    <span class="name">Seth</span>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="exp-values">
+                    <span>EXP.</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">72</span>
+                    </div>
+                </div>
+                <div class="bar exp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                <div class="job">
+                    <img class="icon">
+                    <select class="name"></select>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="jp-values">
+                    <span>JP</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">32</span>
+                    </div>
+                </div>
+                <div class="bar jp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                
+                <div class="buttons">
+                    <button class="deactivate-others">Deactivate All Others</button>
+                    <button class="deactivate">Deactivate</button>
+                </div>
+            </div>
+            
+            <div class="character-card active">
+                <div class="character">
+                    <span class="name">Gloria</span>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="exp-values">
+                    <span>EXP.</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">72</span>
+                    </div>
+                </div>
+                <div class="bar exp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                <div class="job">
+                    <img class="icon">
+                    <select class="name"></select>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="jp-values">
+                    <span>JP</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">32</span>
+                    </div>
+                </div>
+                <div class="bar jp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                
+                <div class="buttons">
+                    <button class="deactivate-others">Deactivate All Others</button>
+                    <button class="deactivate">Deactivate</button>
+                </div>
+            </div>
+            
+            <div class="character-card active">
+                <div class="character">
+                    <span class="name">Elvis</span>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="exp-values">
+                    <span>EXP.</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">72</span>
+                    </div>
+                </div>
+                <div class="bar exp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                <div class="job">
+                    <img class="icon">
+                    <select class="name"></select>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="jp-values">
+                    <span>JP</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">32</span>
+                    </div>
+                </div>
+                <div class="bar jp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                
+                <div class="buttons">
+                    <button class="deactivate-others">Deactivate All Others</button>
+                    <button class="deactivate">Deactivate</button>
+                </div>
+            </div>
+            
+            <div class="character-card active">
+                <div class="character">
+                    <span class="name">Adelle</span>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="exp-values">
+                    <span>EXP.</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">72</span>
+                    </div>
+                </div>
+                <div class="bar exp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                <div class="job">
+                    <img class="icon">
+                    <select class="name"></select>
+                    <div class="level">
+                        <span>Lv. </span>
+                        <span class="value">1</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="jp-values">
+                    <span>JP</span>
+                    <div class="values">
+                        <span class="current">0</span>
+                        /
+                        <span class="required">32</span>
+                    </div>
+                </div>
+                <div class="bar jp-bar">
+                    <span class="gauge" style='padding-right: 0%;'></span>
+                </div>
+                
+                <div class="buttons">
+                    <button class="deactivate-others">Deactivate All Others</button>
+                    <button class="deactivate">Deactivate</button>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <hr>
+        
+        <div class="">
+            <button onclick='setDefaultLog();'>Reset all</button>
+        </div>
+        <textarea id="logTextarea"></textarea>
+        
+        <script>
+        
+        function hasClass(element, className) {
+            return (new RegExp("\\b" + className + "\\b", "g")).test(element.className);
+        }
+        
+        function addClass(element, className) {
+            const classNames = className.split(/\s+/).map(function(className) { return className.trim(); });
+            
+            for(let i = 0; i < classNames.length; ++i) {
+                const className = classNames[i];
+                
+                if(!hasClass(element, className)) {
+                    element.className += " " + className;
+                }
+            }
+            
+            element.className = element.className.replace(/\s+/g, " ").trim();
+        }
+        
+        function removeClass(element, className) {
+            const classNames = className.split(/\s+/).map(function(className) { return className.trim(); });
+            
+            for(let i = 0; i < classNames.length; ++i) {
+                const className = classNames[i];
+                
+                element.className = element.className.replace(new RegExp("\\b" + className + "\\b", "g"), "");
+            }
+            
+            element.className = element.className.replace(/\s+/g, " ").trim();
+            
+            if(element.className === "") {
+                element.removeAttribute("class");
+            }
+        }
+        
+        </script>
+        <script id="jobs">
+        
+        const jobs = [
+            "Freelancer",
+            "Black Mage",
+            "White Mage",
+            "Vanguard",
+            "Monk",
+            "Bard",
+            "Beastmaster",
+            "Thief",
+            "Gambler",
+            "Berserker",
+            "Red Mage",
+            "Ranger",
+            "Shieldmaster",
+            "Pictomancer",
+            "Dragoon",
+            "Spiritmaster",
+            "Swordmaster",
+            "Oracle",
+            "Salve-Maker",
+            "Arcanist",
+            "Bastion",
+            "Phantom",
+            "Hellblade",
+            "Bravebearer"
+        ];
+        
+        </script>
+        <script id="jobicons">
+        
+        const imgPath = "images/jobicons/";
+        
+        const icons = {
+            "Freelancer":      imgPath + "freelancer.png",
+            "Black Mage":      imgPath + "black_mage.png",
+            "White Mage":      imgPath + "white_mage.png",
+            "Vanguard":        imgPath + "vanguard.png",
+            "Monk":            imgPath + "monk.png",
+            "Bard":            imgPath + "bard.png",
+            "Beastmaster":     imgPath + "beastmaster.png",
+            "Thief":           imgPath + "thief.png",
+            "Gambler":         imgPath + "gambler.png",
+            "Berserker":       imgPath + "berserker.png",
+            "Red Mage":        imgPath + "red_mage.png",
+            "Ranger":          imgPath + "ranger.png",
+            "Shieldmaster":    imgPath + "shieldmaster.png",
+            "Pictomancer":     imgPath + "pictomancer.png",
+            "Dragoon":         imgPath + "dragoon.png",
+            "Spiritmaster":    imgPath + "spiritmaster.png",
+            "Swordmaster":     imgPath + "swordmaster.png",
+            "Oracle":          imgPath + "oracle.png",
+            "Salve-Maker":     imgPath + "salve-maker.png",
+            "Arcanist":        imgPath + "arcanist.png",
+            "Bastion":         imgPath + "bastion.png",
+            "Phantom":         imgPath + "phantom.png",
+            "Hellblade":       imgPath + "hellblade.png",
+            "Bravebearer":     imgPath + "bravebearer.png"
+        };
+        
+        </script>
+        <script id="levels">
+        
+        const expLevel = {
+            "1": 0,
+            "2": 72,
+            "3": 240,
+            "4": 504,
+            "5": 896,
+            "6": 1320,
+            "7": 1716,
+            "8": 2112,
+            "9": 2600,
+            "10": 3136,
+            "11": 3600,
+            "12": 3952,
+            "13": 4312,
+            "14": 4680,
+            "15": 5056,
+            "16": 5440,
+            "17": 5760,
+            "18": 6080,
+            "19": 6400,
+            "20": 6720,
+            "21": 6976,
+            "22": 7232,
+            "23": 7488,
+            "24": 7744,
+            "25": 8064,
+            "26": 8320,
+            "27": 8576,
+            "28": 8832,
+            "29": 9088,
+            "30": 9408,
+            "31": 10268,
+            "32": 10540,
+            "33": 10812,
+            "34": 11084,
+            "35": 11424,
+            "36": 11696,
+            "37": 11968,
+            "38": 12240,
+            "39": 12512,
+            "40": 12852,
+            "41": 13124,
+            "42": 13396,
+            "43": 13668,
+            "44": 13940,
+            "45": 14280,
+            "46": 14552,
+            "47": 14824,
+            "48": 15096,
+            "49": 15368,
+            "50": 15708,
+            "51": 15980,
+            "52": 16252,
+            "53": 16524,
+            "54": 16796,
+            "55": 17136,
+            "56": 17408,
+            "57": 17680,
+            "58": 17952,
+            "59": 18224,
+            "60": 18564,
+            "61": 18836,
+            "62": 19108,
+            "63": 19380,
+            "64": 19652,
+            "65": 19992,
+            "66": 20264,
+            "67": 20536,
+            "68": 20808,
+            "69": 21080,
+            "70": 21420,
+            "71": 21692,
+            "72": 21964,
+            "73": 22236,
+            "74": 22508,
+            "75": 22848,
+            "76": 23120,
+            "77": 23392,
+            "78": 23664,
+            "79": 23936,
+            "80": 24276,
+            "81": 24548,
+            "82": 24820,
+            "83": 25092,
+            "84": 25364,
+            "85": 25704,
+            "86": 25976,
+            "87": 26248,
+            "88": 26520,
+            "89": 26792,
+            "90": 27132,
+            "91": 27404,
+            "92": 27676,
+            "93": 27948,
+            "94": 28220,
+            "95": 28560,
+            "96": 28832,
+            "97": 29104,
+            "98": 29376,
+            "99": 29648
+        };
+        
+        </script>
+        <script id="joblevels">
+        
+        const jpLevel = {
+            "1": 0,
+            "2": 32,
+            "3": 91,
+            "4": 204,
+            "5": 377,
+            "6": 624,
+            "7": 728,
+            "8": 780,
+            "9": 832,
+            "10": 884,
+            "11": 1336,
+            "12": 1940,
+            "13": 1100,
+            "14": 1560,
+            "15": 1820
+        };
+        
+        </script>
+        <script>
+        
+        function getCumulativeEXP(level) {
+            let exp = 0;
+            
+            for(let i = 1; i <= level; ++i) {
+                exp += expLevel[i];
+            }
+            
+            return exp;
+        }
+        
+        function getCumulativeJP(level) {
+            let jp = 0;
+            
+            for(let i = 1; i <= level; ++i) {
+                jp += jpLevel[i];
+            }
+            
+            return jp;
+        }
+        
+        function getLog() {
+            return document.querySelector("#logTextarea").value;
+        }
+        
+        function setLog(log) {
+            document.querySelector("#logTextarea").value = log;
+            
+            loadLog();
+        }
+        
+        function setDefaultLog() {
+            const dateString = (new Date()).toISOString();
+            
+            setLog([
+                dateString + ": Seth + 0 EXP.",
+                dateString + ": Seth + 0 JP (Freelancer).",
+                dateString + ": Gloria + 816 EXP.",
+                dateString + ": Gloria + 704 JP (Freelancer).",
+                dateString + ": Elvis + 312 EXP.",
+                dateString + ": Elvis + 123 JP (Black Mage).",
+                dateString + ": Adelle + 1712 EXP.",
+                dateString + ": Adelle + 123 JP (Freelancer).",
+                dateString + ": + 422 pg."
+            ].join("\n") + "\n\n");
+        }
+        
+        function appendLog(line) {
+            let log = getLog();
+            
+            log += (new Date()).toISOString() + ": " + line + "\n";
+            
+            setLog(log);
+        }
+        
+        function getCharacters() {
+            return Array.from(document.querySelectorAll(".character .name")).map(function(element) {
+                return element.innerText;
+            });
+        }
+        
+        function getActiveCharacters() {
+            return Array.from(document.querySelectorAll(".character-card.active .character .name")).map(function(element) {
+                return element.innerText;
+            });
+        }
+        
+        function getMainJob(characterName) {
+            const charactersJobs = Array.from(document.querySelectorAll(".character-card")).map(function(element) {
+                return [element.querySelector(".character .name").innerText, element.querySelector(".job .name").value];
+            });
+            
+            for(let i = 0; i < charactersJobs.length; ++i) {
+                if(charactersJobs[i][0] === characterName) {
+                    return charactersJobs[i][1];
+                }
+            }
+            
+            return undefined;
+        }
+        
+        class Character {
+            constructor() {
+                this.exp = 0;
+                this.jps = {};
+                
+                for(let i = 0; i < jobs.length; ++i) {
+                    this.jps[jobs[i]] = 0;
+                }
+            }
+            
+            giveEXP(value) {
+                this.exp += value;
+            }
+            
+            giveJP(jobName, value) {
+                if(this.jps.hasOwnProperty(jobName)) {
+                    this.jps[jobName] += value;
+                }
+            }
+            
+            getLevel() {
+                let level = 99;
+                
+                while(this.exp < getCumulativeEXP(level)) {
+                    --level;
+                }
+                
+                return level;
+            }
+            
+            getJobLevel(jobName) {
+                if(!this.jps.hasOwnProperty(jobName)) {
+                    return undefined;
+                }
+                
+                let level = 15;
+                
+                while(this.jps[jobName] < getCumulativeJP(level)) {
+                    --level;
+                }
+                
+                return level;
+            }
+            
+            getEXPSoFar() {
+                const level = this.getLevel();
+                
+                if(level >= 99) {
+                    return 0;
+                }
+                
+                return this.exp - getCumulativeEXP(level);
+            }
+            
+            getJPSoFar(jobName) {
+                if(!this.jps.hasOwnProperty(jobName)) {
+                    return undefined;
+                }
+                
+                const level = this.getJobLevel(jobName);
+                
+                if(level >= 15) {
+                    return 0;
+                }
+                
+                return this.jps[jobName] - getCumulativeJP(level);
+            }
+            
+            getNextLevelEXP() {
+                const level = this.getLevel();
+                
+                if(level < 99) {
+                    return expLevel[level + 1];
+                }
+                
+                return 0;
+            }
+            
+            getNextLevelJP(jobName) {
+                if(!this.jps.hasOwnProperty(jobName)) {
+                    return undefined;
+                }
+                
+                const level = this.getJobLevel(jobName);
+                
+                if(level < 15) {
+                    return jpLevel[level + 1];
+                }
+                
+                return 0;
+            }
+            
+            getEXPProgression() {
+                if(this.getLevel() >= 99) {
+                    return 0;
+                }
+                
+                return this.getEXPSoFar() / this.getNextLevelEXP();
+            }
+            
+            getJPProgression(jobName) {
+                if(!this.jps.hasOwnProperty(jobName)) {
+                    return undefined;
+                }
+                
+                if(this.getJobLevel(jobName) >= 15) {
+                    return 0;
+                }
+                
+                return this.getJPSoFar(jobName) / this.getNextLevelJP(jobName);
+            }
+        }
+        
+        const characters = {};
+        let pgCount = 0;
+        
+        function updateElements() {
+            document.querySelector("#pgDiv .value").innerHTML = pgCount;
+            
+            Array.from(document.querySelectorAll(".character-card")).forEach(function(card) {
+                const characterName = card.querySelector(".character .name").innerHTML;
+                const character = characters[characterName];
+                
+                card.querySelector(".character .level .value").innerHTML = character.getLevel();
+                
+                card.querySelector(".exp-values .values .current").innerHTML = character.getEXPSoFar();
+                
+                card.querySelector(".exp-values .values .required").innerHTML = character.getNextLevelEXP();
+                
+                card.querySelector(".exp-bar .gauge").style["padding-right"] = (character.getEXPProgression() * 100) + "%";
+                
+                const jobName = getMainJob(characterName);
+                
+                card.querySelector(".job .level .value").innerHTML = character.getJobLevel(jobName);
+                
+                card.querySelector(".jp-values .values .current").innerHTML = character.getJPSoFar(jobName);
+                
+                card.querySelector(".jp-values .values .required").innerHTML = character.getNextLevelJP(jobName);
+                
+                card.querySelector(".jp-bar .gauge").style["padding-right"] = (character.getJPProgression(jobName) * 100) + "%";
+                
+            });
+        }
+        
+        function loadLog() {
+            const log = getLog();
+            
+            getCharacters().forEach(function(characterName) {
+                characters[characterName] = new Character();
+            });
+            
+            pgCount = 0;
+            
+            log.split(/\n/g).forEach(function(line) {
+                let matches;
+                
+                if(matches = line.match(/:\s+([^+]+)\s*\+\s*(\d+)\s*EXP/i)) {
+                    const characterName = matches[1].trim();
+                    const expValue = Number(matches[2]);
+                    
+                    if(characters.hasOwnProperty(characterName)) {
+                        characters[characterName].giveEXP(expValue);
+                    }
+                }
+                
+                else if(matches = line.match(/:\s+([^+]+)\s*\+\s*(\d+)\s*JP\s*\(([^)]+)\)/i)) {
+                    const characterName = matches[1].trim();
+                    const jpValue = Number(matches[2]);
+                    const jobName = matches[3].trim();
+                    
+                    if(characters.hasOwnProperty(characterName)) {
+                        characters[characterName].giveJP(jobName, jpValue);
+                    }
+                }
+                
+                else if(matches = line.match(/:\s+\+\s*(\d+)\s*pg/i)) {
+                    const pgValue = Number(matches[1]);
+                    
+                    pgCount += pgValue;
+                }
+            });
+            
+            updateElements();
+        }
+        
+        </script>
+        <script>
+        
+        Array.from(document.querySelectorAll(".character-card")).forEach(function(card, index, cards) {
+            {
+                const button = card.querySelector(".deactivate");
+                
+                button.addEventListener("click", function(event) {
+                    if(hasClass(card, "active")) {
+                        removeClass(card, "active");
+                        button.innerHTML = "Activate";
+                    } else {
+                        addClass(card, "active");
+                        button.innerHTML = "Deactivate";
+                    }
+                });
+            }
+            
+            {
+                const button = card.querySelector(".deactivate-others");
+                
+                button.addEventListener("click", function(event) {
+                    cards.forEach(function(card) {
+                        removeClass(card, "active");
+                        card.querySelector(".deactivate").innerHTML = "Activate";
+                    });
+                    
+                    addClass(card, "active");
+                    card.querySelector(".deactivate").innerHTML = "Deactivate";
+                });
+            }
+            
+            card.querySelectorAll(".job .name").forEach(function(select) {
+                jobs.forEach(function(jobName) {
+                    select.appendChild((function() {
+                        const option = document.createElement("option");
+                        
+                        option.innerText = jobName;
+                        
+                        return option;
+                    })());
+                });
+                
+                select.addEventListener("change", function() {
+                    const characterName = card.querySelector(".character .name").innerHTML;
+                    const jobName = getMainJob(characterName);
+                    
+                    select.parentElement.querySelector(".icon").src = icons[jobName];
+                    
+                    updateElements();
+                });
+            });
+        });
+        
+        document.querySelector("#logTextarea").addEventListener("input", function() {
+            loadLog();
+        });
+        
+        addEventListener("load", function() {
+            setDefaultLog();
+            
+            try {
+                const key = "bdii_exp_tracker-log";
+                let log;
+                
+                if((log = localStorage.getItem(key)) !== null) {
+                    setLog(log);
+                } else {
+                    
+                }
+            } catch(e) {
+                console.warn("Local Storage might not be supported.");
+            }
+            
+            Array.from(document.querySelectorAll(".job .name")).forEach(function(select) {
+                select.dispatchEvent(new Event("change"));
+            });
+        });
+        
+        addEventListener("beforeunload", function() {
+            try {
+                const key = "bdii_exp_tracker-log";
+                const log = getLog();
+                
+                if(log === "") {
+                    localStorage.removeItem(key);
+                } else {
+                    localStorage.setItem(key, log);
+                }
+            } catch(e) {
+                console.warn("Local Storage might not be supported.");
+            }
+        });
+        
+        function confirm() {
+            const pgInput = document.querySelector("#rewards #pg");
+            const expInput = document.querySelector("#rewards #exp");
+            const jpInput = document.querySelector("#rewards #jp");
+            
+            const pgValue = Number(pgInput.value);
+            const expValue = Number(expInput.value);
+            const jpValue = Number(jpInput.value);
+            
+            pgInput.value = null;
+            expInput.value = null;
+            jpInput.value = null;
+            
+            getActiveCharacters().forEach(function(characterName) {
+                if(expValue > 0) {
+                    appendLog(characterName + " + " + expValue + " EXP.");
+                }
+            });
+            
+            getActiveCharacters().forEach(function(characterName) {
+                const jobName = getMainJob(characterName);
+                
+                if(jpValue > 0) {
+                    appendLog(characterName + " + " + jpValue + " JP (" + jobName + ").");
+                }
+            });
+            
+            if(pgValue > 0) {
+                appendLog("+ " + pgValue + " pg.");
+            }
+            
+            setLog(getLog() + "\n");
+            
+            loadLog();
+        }
+        
+        </script>
+    </body>
+</html>
