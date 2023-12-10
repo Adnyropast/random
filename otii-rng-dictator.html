@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Octopath Traveler II RNG Dictator</title>
+        
+        <style>
+        
+        html {
+            height: 100%;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            
+            margin: 0;
+            height: 100%;
+        }
+        
+        .options {
+            padding: 8px 16px;
+        }
+        
+        #main {
+            flex-grow: 1;
+        }
+        
+        #cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            
+            padding: 16px;
+        }
+        
+        .card {
+            padding: 16px 0;
+        }
+        
+        .card:not(.completed) {
+            background-color: lightPink;
+        }
+        
+        .card:nth-child(1) {
+            background-color: lightYellow;
+        }
+        
+        .card.completed {
+            background-color: lightGreen;
+        }
+        
+        .card > hr {
+            border: none;
+            border-bottom: 1px solid #0000003F;
+        }
+        
+        .card > div {
+            padding: 0 16px;
+        }
+        
+        [data-data=completed-date-display]:not(.visible) {
+            display: none;
+        }
+        
+        </style>
+    </head>
+    <body>
+        <div class="options">
+            <button onclick='shuffleCards();'>Shuffle</button>
+            <button onclick='sortCards();'>Sort</button>
+            
+            <label>
+                <input type="checkbox" id="unload-save">
+                <span>Remember progression</span>
+            </label>
+            
+            <button onclick='downloadFile();'>Export</button>
+        </div>
+        
+        <div id="main">
+            <div id="cards"></div>
+        </div>
+        
+        <div class="options">
+            <span>
+                <span>Options:</span>
+                <span id="options-count">0</span>
+            </span>
+            
+            <span>|</span>
+            
+            <span>
+                <span>Completed:</span>
+                <span id="completed-count">0</span>
+            </span>
+            
+            <span>|</span>
+            
+            <span>
+                <span>Total:</span>
+                <span id="total-count">0</span>
+            </span>
+        </div>
+        
+        <template id="card">
+            <div class="card">
+                <div>
+                    <span data-data="title">Chapter X</span>
+                </div>
+                
+                <hr>
+                
+                <div>
+                    <label>
+                        <input type="checkbox" data-data="completed">
+                        <input type="hidden" data-data="completed-date">
+                        <span>Done</span>
+                        <span data-data="completed-date-display">
+                            <span>(</span>
+                            <small data-data="completed-date-display-date"></small>
+                            <span>)</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </template>
+        
+        <script>
+        
+        function array_shuffle(array) {
+            const clone = Array.from(array);
+            array.length = 0;
+            
+            while(clone.length > 0) {
+                const index = Math.floor(Math.random() * clone.length);
+                
+                array.push(clone[index]);
+                clone.splice(index, 1);
+            }
+            
+            return array;
+        }
+        
+        function datestr(date = new Date()) {
+            const year = "" + date.getFullYear();
+            const month = ("00" + (date.getMonth() + 1)).slice(-2);
+            const day = ("00" + date.getDate()).slice(-2);
+            const hours = ("00" + date.getHours()).slice(-2);
+            const minutes = ("00" + date.getMinutes()).slice(-2);
+            const seconds = ("00" + date.getSeconds()).slice(-2);
+            const milliseconds = ("000" + date.getMilliseconds()).slice(-3);
+            
+            return year + "-" + month + "-" + day + "_" + hours + "-" + minutes + "-" + seconds + "-" + milliseconds;
+        }
+        
+        </script>
+        <script>
+        
+        class Chapter {
+            constructor(title, predecessors = []) {
+                this.title = title;
+                this.predecessors = predecessors;
+            }
+        }
+        
+        const allChapters = [
+            new Chapter("Ochette Chapter 1"),
+            new Chapter("Ochette Chapter 2: Cateracta's Route", ["Ochette Chapter 1"]),
+            new Chapter("Ochette Chapter 2: Tera's Route", ["Ochette Chapter 1"]),
+            new Chapter("Ochette Chapter 2: Glacis's Route", ["Ochette Chapter 1"]),
+            new Chapter("Ochette Chapter 3", ["Ochette Chapter 2: Cateracta's Route", "Ochette Chapter 2: Tera's Route", "Ochette Chapter 2: Glacis's Route"]),
+            
+            new Chapter("Castti Chapter 1"),
+            new Chapter("Castti Chapter 2: Sai Route", ["Castti Chapter 1"]),
+            new Chapter("Castti Chapter 2: Winterbloom Route", ["Castti Chapter 1"]),
+            new Chapter("Castti Chapter 3", ["Castti Chapter 2: Sai Route", "Castti Chapter 2: Winterbloom Route"]),
+            new Chapter("Castti Chapter 4", ["Castti Chapter 3"]),
+            
+            new Chapter("Throné Chapter 1"),
+            new Chapter("Throné Chapter 2: Mother's Route", ["Throné Chapter 1"]),
+            new Chapter("Throné Chapter 2: Father's Route", ["Throné Chapter 1"]),
+            new Chapter("Throné Chapter 3: Mother's Route", ["Throné Chapter 2: Mother's Route"]),
+            new Chapter("Throné Chapter 3: Father's Route", ["Throné Chapter 2: Father's Route"]),
+            new Chapter("Throné Chapter 4", ["Throné Chapter 3: Mother's Route", "Throné Chapter 3: Father's Route"]),
+            
+            new Chapter("Osvald Chapter 1+2"),
+            new Chapter("Osvald Chapter 3", ["Osvald Chapter 1+2"]),
+            new Chapter("Osvald Chapter 4", ["Osvald Chapter 3"]),
+            new Chapter("Osvald Chapter 5", ["Osvald Chapter 4"]),
+            
+            new Chapter("Partitio Chapter 1"),
+            new Chapter("Partitio Chapter 2", ["Partitio Chapter 1"]),
+            new Chapter("The Scent of Commerce: Tropu'hopu Route", ["Partitio Chapter 1"]),
+            new Chapter("The Scent of Commerce: Winterbloom Route", ["Partitio Chapter 1"]),
+            new Chapter("The Scent of Commerce: Sai Route", ["Partitio Chapter 1"]),
+            new Chapter("Partitio Chapter 3", ["Partitio Chapter 2", "The Scent of Commerce"]),
+            new Chapter("Partitio Chapter 4", ["Partitio Chapter 3", "The Scent of Commerce: Tropu'hopu Route"]),
+            
+            new Chapter("Agnea Chapter 1"),
+            new Chapter("Agnea Chapter 2", ["Agnea Chapter 1"]),
+            new Chapter("Agnea Chapter 3", ["Agnea Chapter 2"]),
+            new Chapter("Agnea Chapter 4", ["Agnea Chapter 3"]),
+            new Chapter("Agnea Chapter 5", ["Agnea Chapter 4"]),
+            
+            new Chapter("Temenos Chapter 1"),
+            new Chapter("Temenos Chapter 2", ["Temenos Chapter 1"]),
+            new Chapter("Temenos Chapter 3: Crackridge Route", ["Temenos Chapter 2"]),
+            new Chapter("Temenos Chapter 3: Stormhail Route", ["Temenos Chapter 2"]),
+            new Chapter("Temenos Chapter 4", ["Temenos Chapter 3: Crackridge Route", "Temenos Chapter 3: Stormhail Route"]),
+            
+            new Chapter("Hikari Chapter 1"),
+            new Chapter("Hikari Chapter 2", ["Hikari Chapter 1"]),
+            new Chapter("Hikari Chapter 3", ["Hikari Chapter 2"]),
+            new Chapter("Hikari Chapter 4", ["Hikari Chapter 3"]),
+            new Chapter("Hikari Chapter 5", ["Hikari Chapter 4"]),
+            
+            new Chapter("The Dancer & Warrior Part 1", ["Agnea Chapter 2", "Hikari Chapter 2"]),
+            new Chapter("The Dancer & Warrior Part 2", ["The Dancer & Warrior Part 1", "Agnea Chapter 5", "Hikari Chapter 5"]),
+            
+            new Chapter("The Scholar & Merchant Part 1", ["Osvald Chapter 3", "Partitio Chapter 2"]),
+            new Chapter("The Scholar & Merchant Part 2", ["The Scholar & Merchant Part 1", "Osvald Chapter 5", "Partitio Chapter 4"]),
+            
+            new Chapter("The Cleric & Thief Part 1", ["Temenos Chapter 2", "Throné Chapter 2"]),
+            new Chapter("The Cleric & Thief Part 2", ["The Cleric & Thief Part 1", "Temenos Chapter 4", "Throné Chapter 4"]),
+            
+            new Chapter("The Apothecary & Hunter Part 1", ["Castti Chapter 2", "Ochette Chapter 2"]),
+            new Chapter("The Apothecary & Hunter Part 2", ["The Apothecary & Hunter Part 1", "Castti Chapter 4", "Ochette Chapter 3"]),
+            
+            new Chapter("The Journey for the Dawn", [
+                "The Dancer & Warrior Part 2",
+                "The Scholar & Merchant Part 2",
+                "The Cleric & Thief Part 2",
+                "The Apothecary & Hunter Part 2",
+            ]),
+            
+            new Chapter("Epilogue", ["The Journey for the Dawn"]),
+        ];
+        
+        </script>
+        <script>
+        
+        const cardsDiv = document.querySelector("#cards");
+        const cardTemplate = document.querySelector("#card");
+        
+        const optionsCountSpan = document.querySelector("#options-count");
+        const completedCountSpan = document.querySelector("#completed-count");
+        const totalCountSpan = document.querySelector("#total-count");
+        
+        totalCountSpan.innerText = allChapters.length;
+        
+        function checkIsChapterCompleted(chapter) {
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            const completedChapters = cards.filter((card) => (card.querySelector("[data-data=completed]").checked)).map((card) => (card.querySelector("[data-data=title]").innerText));
+            
+            return !!completedChapters.find((completedChapter) => (completedChapter.startsWith(chapter)));
+        }
+        
+        function shuffleCards() {
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            const uncompletedCards = cards.filter((card) => (!card.classList.contains("completed")));
+            const completedCards = cards.filter((card) => (card.classList.contains("completed")));
+            
+            cardsDiv.innerHTML = "";
+            
+            array_shuffle(uncompletedCards).concat(completedCards).forEach((card) => {
+                cardsDiv.appendChild(card);
+            });
+        }
+        
+        function sortCards() {
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            const uncompletedCards = cards.filter((card) => (!card.classList.contains("completed")));
+            const completedCards = cards.filter((card) => (card.classList.contains("completed")));
+            
+            cardsDiv.innerHTML = "";
+            
+            uncompletedCards.sort((x, y) => {
+                const a = allChapters.findIndex((chapter) => (chapter.title === x.querySelector("[data-data=title]").innerText));
+                const b = allChapters.findIndex((chapter) => (chapter.title === y.querySelector("[data-data=title]").innerText));
+                
+                return a - b;
+            }).concat(completedCards).forEach((card) => {
+                cardsDiv.appendChild(card);
+            });
+        }
+        
+        function addNewCard(data = null) {
+            let card = cardTemplate.content.cloneNode(true);
+            
+            cardsDiv.insertBefore(card, cardsDiv.firstElementChild)
+            
+            card = cardsDiv.firstElementChild;
+            
+            card.querySelector("[data-data=completed]").addEventListener("change", function() {
+                if(this.checked) {
+                    card.classList.add("completed");
+                    card.querySelector("[data-data=completed-date]").value = (new Date()).toISOString();
+                    card.querySelector("[data-data=completed-date-display-date]").innerText = (new Date()).toLocaleString();
+                    card.querySelector("[data-data=completed-date-display]").classList.add("visible");
+                } else {
+                    card.classList.remove("completed");
+                    card.querySelector("[data-data=completed-date]").value = null;
+                    card.querySelector("[data-data=completed-date-display-date]").innerText = null;
+                    card.querySelector("[data-data=completed-date-display]").classList.remove("visible");
+                }
+                
+                updateCards();
+            });
+            
+            if(data) {
+                card.querySelector("[data-data=title]").innerText = data.title;
+                
+                if(data.completed) {
+                    card.classList.add("completed");
+                    card.querySelector("[data-data=completed]").checked = true;
+                    card.querySelector("[data-data=completed-date]").value = data["completed-date"];
+                    card.querySelector("[data-data=completed-date-display-date]").innerText = (new Date(data["completed-date"])).toLocaleString();
+                    card.querySelector("[data-data=completed-date-display]").classList.add("visible");
+                }
+            }
+        }
+        
+        function addNewCardFromChapter(chapter) {
+            addNewCard({title: chapter});
+        }
+        
+        function updateCounts() {
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            const uncompletedCards = cards.filter((card) => (!card.classList.contains("completed")));
+            const completedCards = cards.filter((card) => (card.classList.contains("completed")));
+            
+            optionsCountSpan.innerText = uncompletedCards.length;
+            completedCountSpan.innerText = completedCards.length;
+            totalCountSpan.innerText = allChapters.length;
+        }
+        
+        function updateCards() {
+            let availableChapters = allChapters.filter((chapter) => (
+                chapter.predecessors.every(checkIsChapterCompleted)
+            ));
+            
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            const chapters = cards.map((card) => (card.querySelector("[data-data=title]").innerText));
+            
+            for(let i = 0; i < cards.length; ++i) {
+                const card = cards[i];
+                
+                if(!availableChapters.find((chapter) => (chapter.title === card.querySelector("[data-data=title]").innerText))) {
+                    card.remove();
+                    
+                    return updateCards();
+                }
+            }
+            
+            availableChapters.forEach((chapter) => {
+                if(!chapters.includes(chapter.title)) {
+                    addNewCardFromChapter(chapter.title);
+                }
+            });
+            
+            updateCounts();
+            
+            shuffleCards();
+        }
+        
+        function getExport() {
+            const cards = Array.from(cardsDiv.querySelectorAll(".card"));
+            
+            return cards.map((card) => ({
+                "title": card.querySelector("[data-data=title]").innerText,
+                "completed": card.querySelector("[data-data=completed]").checked,
+                "completed-date": card.querySelector("[data-data=completed-date]").value,
+            }));
+        }
+        
+        function downloadFile() {
+            const a = document.createElement("a");
+            
+            a.href = "data:text/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(getExport()))));
+            a.download = "octopathII-rngdictator-export-" + datestr() + ".json";
+            
+            a.click();
+        }
+        
+        function importCards(cards) {
+            cardsDiv.innerHTML = "";
+            
+            Array.from(cards).reverse().forEach((card) => {
+                addNewCard(card);
+            });
+            
+            updateCards();
+        }
+        
+        addEventListener("dragover", function(event) {
+            event.preventDefault();
+        });
+        
+        addEventListener("drop", function(event) {
+            event.preventDefault();
+            
+            const files = event.dataTransfer.files;
+            
+            if(files.length > 0) {
+                const file = files[0];
+                
+                const fileReader = new FileReader();
+                
+                fileReader.addEventListener("load", function() {
+                    try {
+                        importCards(JSON.parse(this.result));
+                    } catch(e) {
+                        console.error(e);
+                    }
+                });
+                
+                fileReader.readAsText(file);
+            }
+        });
+        
+        </script>
+        <script>
+        
+        const unloadSaveCheckbox = document.querySelector("#unload-save");
+        const SAVE_KEY = "octopathII-rngdictator";
+        
+        addEventListener("load", function() {
+            const value = localStorage.getItem(SAVE_KEY);
+            
+            if(value !== null) {
+                try {
+                    const data = JSON.parse(value);
+                    
+                    console.log(data);
+                    
+                    importCards(data.cards);
+                    
+                    unloadSaveCheckbox.checked = true;
+                } catch(e) {
+                    localStorage.removeItem(SAVE_KEY);
+                }
+            }
+            
+            updateCards();
+        });
+        
+        addEventListener("beforeunload", function() {
+            if(unloadSaveCheckbox.checked) {
+                localStorage.setItem(SAVE_KEY, JSON.stringify({
+                    "cards": getExport(),
+                }));
+            } else {
+                localStorage.removeItem(SAVE_KEY);
+            }
+        });
+        
+        </script>
+    </body>
+</html>
