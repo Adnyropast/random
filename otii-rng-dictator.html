@@ -307,6 +307,7 @@
                 }
                 
                 updateCards();
+                shuffleCards();
             });
             
             if(data) {
@@ -361,8 +362,6 @@
             });
             
             updateCounts();
-            
-            shuffleCards();
         }
         
         function getExport() {
@@ -428,22 +427,27 @@
         
         addEventListener("load", function() {
             const value = localStorage.getItem(SAVE_KEY);
+            let success = false;
             
             if(value !== null) {
                 try {
                     const data = JSON.parse(value);
                     
-                    console.log(data);
-                    
                     importCards(data.cards);
                     
                     unloadSaveCheckbox.checked = true;
+                    
+                    success = true;
                 } catch(e) {
                     localStorage.removeItem(SAVE_KEY);
                 }
             }
             
             updateCards();
+            
+            if(!success) {
+                shuffleCards();
+            }
         });
         
         addEventListener("beforeunload", function() {
